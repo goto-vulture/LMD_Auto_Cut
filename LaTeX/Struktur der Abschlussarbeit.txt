@@ -1,0 +1,59 @@
+- Tabellenverzeichnis (falls erforderlich)
+- Abbildungsverzeichnis
+- Abkuerzungsverzeichnis
+
+- Einleitung
+    * Gewebeduennschnitte
+    * Ziel der Arbeit
+
+- Aktueller Stand
+    * Bisher verwendeter Workflow
+    * Faerbungsprozess
+        # Biologischer Hintergrund
+        # Scheiden und Praeparieren der Proben
+        # Bilderzeugung
+    * Lasermikrodissektion
+        # Kalibrationsproblem
+    * Massenspektrometrie
+    * Verfuegbare Software
+        # Cellpose
+        # pyLMD
+        # qupath
+
+- Entwicklung eines Workflows
+    * Softwarearchitektur
+        # Technische Anforderungen
+        # Nicht-technische Anforderungen
+    * Kalibrationsmethode
+    * Datenaufbereitung
+    * Bereitstellung einer GUI
+    * Dateiexport
+    * Optimierungen
+        # Wahl des Backends
+        # Mip-Mapping
+        # Usability
+
+- Auswertung der Ergebnisse
+    * Auswertung der Schnittergebnisse
+    * Ressourcenverbrauch
+    * Vergleich des neuen Workflows zum bisherigen Workflow
+
+- Diskussion
+
+- Fazit und Ausblick
+
+
+
+>>>>> Fragen und Kommentare zu einigen Punkten <<<<<
+
+Q: Einleitung->Gewebeduennschnitte: Ich bin mir nicht ganz sicher welchen Aspekt man am Anfang vorbringen soll; Man koennte auch direkt die Lasermikrodissektion anbringen.
+A: Die technische Seite der Gewebeschnitte und die LMD brauchst Du nicht unbedingt im Detail beschreiben. Mir würde es eher um die Bioinformatische Fragestellung und Umsetzung gehen.
+
+Q: Aktueller Stand->Bisher verwendeter Workflow: Eine Zusammenfassung wie aktuell der Workflow stattfindet; wo es Potenzial fuer Automatisierung gibt und wo mein Tool eingreifen wuerde. Oder sollte ich den Fokus auf den Teil richten, den ich versuche zu verbessern?
+A: Wir hatten ja nicht wirklich einen guten Algorithmus. Also so beschreiben wie Du schreibst.
+
+Q: Aktueller Stand->Faerbungsprozess: Beschreibung wie man vom einen Gewebeschnitt zu den Bildern kommt. Was glaubst du wie ausfuehrlich sollte dieser Punkt sein?
+A: Nicht ausführlich, wenn überhaupt. Konzentriere Dich eher auf die Bioinf Umsetzung.
+
+Q: Aktueller Stand->Massenspektrometrie: Am Ende macht man ja den ganzen Aufwand hauptsaechlich fuer gute MS Proben. Man koennte diese Geraete hier ebenfalls erlaeutern; die Frage dabei ist nur, ob dies nicht vielleicht etwas zu Off-Topic ist.
+A: Kurz als Ziel erwähnen. Also Gewebeareal und Zellspezifische Proteom Analysen durch Mass spec.
