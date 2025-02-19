@@ -1,89 +1,24 @@
-\documentclass[]{article}
+\documentclass[11pt, a4paper, oneside]{article}
+\usepackage[left=2.5cm,top=3cm,right=2.5cm,bottom=3cm,bindingoffset=0.5cm]{geometry}
 
 \usepackage[utf8]{inputenc} % UTF-8 Kodierung verwenden
 \usepackage[ngerman]{babel} % Neue deutsche Sprache
-% \usepackage{cooltooltips}
 \usepackage{caption}
 \usepackage{graphicx}
-\usepackage{animate}
 \usepackage{tikz}
 \usepackage{pgfplots}
 \usetikzlibrary{shapes.geometric, arrows, positioning, decorations.fractals, spy, babel}
-\usepackage{tkz-euclide}
 \usepackage{authoraftertitle}
 \usepackage{nameref}
 \usepackage{ifthen}
-\usepackage{fdsymbol}
-\usepackage{algorithm2e}
-\usepackage{fontawesome5}
 \usepackage{subfigure}
+\usepackage[style=super]{glossaries}
 \usepackage{tikz-uml}
 \graphicspath{{./}{./Images}}
 
-\newcommand{\drawCoordSystem}[5][black]{%
-    \def\xmin{#2}
-    \def\xmax{#3}
-    \def\ymin{#4}
-    \def\ymax{#5}
-
-    \draw[->, thick, #1] (\xmin, 0) -- (\xmax, 0);
-    \draw[->, thick, #1] (0, \ymin) -- (0, \ymax);
-
-    % Ursprung markieren
-    \fill[#1] (0,0) circle (0.1);
-
-    \foreach \x in {\xmin, ..., \xmax}
-    {
-        \draw[dotted, #1] (\x, \ymin) -- (\x, \ymax) node[above] {\x};
-    }
-    \foreach \y in {\ymin, ..., \ymax}
-    {
-        \draw[dotted, #1] (\xmin, \y) -- (\xmax, \y) node[right] {\y};
-    }
-
-    \draw[thick, #1] (-\xmax, 0) node[left] {x};
-    \draw[thick, #1] (0, -\ymax) node[below] {y};
-}
-
-% Debug Coord-Systemns
-\newcommand{\drawCoordSystemDefault}[1][]{\drawCoordSystem[#1]{-1}{1}{-1}{1}}
-\newcommand{\drawCoordSystemOneArg}[2][]{\drawCoordSystem[#1]{-#2}{#2}{-#2}{#2}}
-
-\newcommand{\simpleDebugCode}{%
-    % Debug Sachen, um die Koordinatenausrichtung direkt erkennen zu koennen
-    \node (Origin) at (0, 0) [rectangle, fill=red, draw=black, minimum height=0.1cm, minimum width=0.1cm] {};
-    \draw [->, thin, draw=red] (0, 0) -- (0.5, 0);
-    \node at (0.55, 0) {\footnotesize\color{red} x};
-    \draw [->, thin, draw=red] (0, 0) -- (0, 0.5);
-    \node at (0, 0.65) {\footnotesize\color{red} y};
-}
-
-% Abfragen des aktuellen Section / Subsection Namen
-\makeatletter
-\newcommand{\currentname}{\@currentlabelname}
-\newcommand{\currentnameS}{\currentname\space}
-\makeatother
-
-\newcommand{\gerquot}[1]{\glqq#1\grqq}
-\newcommand{\dashAndSpace}{\textendash \space}
-\newcommand{\dashAndSpaceSeq}[1]{\dashAndSpace#1 \textendash}
-\newcommand{\calc}[1]{\pgfmathparse{#1}\pgfmathresult}
-\newcommand{\myRightArrow}{%
-\centering
-\begin{tabular}[c]{@{}c@{}c@{}}%
-    \LARGE$\rightarrow$%
-\end{tabular} }
-
-\newcommand{\pylmd}{pyLMD}
-\newcommand{\pylmdE}{\emph{\pylmd}}
-\newcommand{\pylmdES}{\emph{\pylmd}}
-\newcommand{\pylmdS}{\pylmd\space}
-\newcommand{\cellpose}{Cellpose}
-\newcommand{\cellposeS}{\cellpose\space}
-\newcommand{\fiji}{Fiji}
-\newcommand{\fijiS}{\fiji\space}
-\newcommand{\lmd}{LMD}
-\newcommand{\lmdS}{\lmd\space}
+\makeglossaries
+\input{Acros.tex}
+\input{DIY_Commands.tex}
 
 
 
@@ -91,6 +26,15 @@
 
 \pgfplotsset{compat=1.18}
 \begin{document}
+
+\printglossary[title={Abkürzungsverzeichnis}]
+\newpage
+
+\section{Zusammenfassung}
+Der Bereich der Immunbiologie beschäftigt sich in erster Linie mit Aspekten der Immunantwort. Dafür müssen spezifische Areale von Gewebeproben für eine weitere Analyse isoliert werden. Die \gls{lmd} ermöglicht das gezielte Ausschneiden eben solcher Areale. Bisher erfolgt die Bedienung manuell; das heißt von jedem Areal wird händisch die Umrandung eingzeichnet. Dies führt dazu, dass teilweise mehrere Stunden nötig sind, nur um eine Probe zu bearbeiten.
+
+Das Ziel dieser Abschlussarbeit ist eine möglichst weitgehende Automatisierung. Grund-sätzlich existieren bereits Lösungsansätze um dieses Problem zu beheben. Jedoch ist keiner dieser Ansätze in der Lage für das vorliegende Gerät (Name einfügen) eine Bedienung ohne tiefere IT Kenntnisse zu ermöglichen. In dieser Arbeit wurde eine Recherche über mögliche Bibliohtheken sowie bereits vorhandener Software durchgeführt und eine Software bereitgestellt, die mithilfe von frei verfügbaren Bibliohtheken passende Exportdateien erstellt, die die Software des \gls{lmd}-Gerätes einlesen und verarbeiten kann.
+\newpage
 
 \tableofcontents
 \newpage
