@@ -29,6 +29,7 @@
     * Bereitstellung einer GUI
     * Dateiexport
     * Optimierungen
+        # Fehlerkorrektur des XML-Importes
         # Wahl des Backends
         # Mip-Mapping
         # Usability

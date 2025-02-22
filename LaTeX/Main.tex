@@ -12,6 +12,8 @@
 \usepackage{nameref}
 \usepackage{ifthen}
 \usepackage{subfigure}
+\setlength{\marginparwidth}{2cm} % Notwendig, um ToDo Hinweise vernünftig anzuzeigen
+\usepackage{todonotes}
 \usepackage[style=super]{glossaries}
 \usepackage{tikz-uml}
 \graphicspath{{./}{./Images}}
@@ -30,16 +32,95 @@
 \printglossary[title={Abkürzungsverzeichnis}]
 \newpage
 
-\section{Zusammenfassung}
+\section{Zusammenfassung}\label{s:Zusammenfassung}
 Der Bereich der Immunbiologie beschäftigt sich in erster Linie mit Aspekten der Immunantwort. Dafür müssen spezifische Areale von Gewebeproben für eine weitere Analyse isoliert werden. Die \gls{lmd} ermöglicht das gezielte Ausschneiden eben solcher Areale. Bisher erfolgt die Bedienung manuell; das heißt von jedem Areal wird händisch die Umrandung eingzeichnet. Dies führt dazu, dass teilweise mehrere Stunden nötig sind, nur um eine Probe zu bearbeiten.
 
-Das Ziel dieser Abschlussarbeit ist eine möglichst weitgehende Automatisierung. Grund-sätzlich existieren bereits Lösungsansätze um dieses Problem zu beheben. Jedoch ist keiner dieser Ansätze in der Lage für das vorliegende Gerät (Name einfügen) eine Bedienung ohne tiefere IT Kenntnisse zu ermöglichen. In dieser Arbeit wurde eine Recherche über mögliche Bibliohtheken sowie bereits vorhandener Software durchgeführt und eine Software bereitgestellt, die mithilfe von frei verfügbaren Bibliohtheken passende Exportdateien erstellt, die die Software des \gls{lmd}-Gerätes einlesen und verarbeiten kann.
+Das Ziel dieser Abschlussarbeit ist eine möglichst weitgehende Automatisierung mit der zusätzlichen Nebenbedingung, dass am Ende ein Workflow zur Verfügung steht, der auch von Nicht-ITlern verwendet werden kann. Grund-sätzlich existieren bereits Lösungsansätze um dieses Problem zu beheben. Jedoch ist keiner dieser Ansätze in der Lage für das vorliegende Gerät (\todo[fancyline]{Genauen Namen des LMD Gerätes einfügen}) eine Bedienung ohne tiefere IT Kenntnisse zu ermöglichen. In dieser Arbeit wurde eine Recherche über mögliche Bibliohtheken sowie bereits vorhandener Software durchgeführt und eine Software bereitgestellt, die mithilfe von frei verfügbaren Bibliohtheken passende Exportdateien erstellt, die die Software des \gls{lmd}-Gerätes einlesen und verarbeiten kann.
 \newpage
 
 \tableofcontents
 \newpage
 
-\section{TEST}
-    ...
+\section{Aktueller Stand}\label{s:AktuellerStand}
+Mithilfe der \gls{ms} lässt sich die Masse von Molekülen messen. Dadurch lassen sich u.a. Proteine identifizieren. Dies ist insb. im Bereich der Biologie (und daher auch in der Immunbiologie) relevant, da vielerlei Prozesse maßgeblich durch Proteine gesteuert werden. Im Kapitel \ref{ss:Massenspektrometrie} wird das Grundverfahren beschrieben.
+
+\subsection{Massenspektrometrie}\label{ss:Massenspektrometrie}
+Das Grundverfahren hinter der \gls{ms} ist nicht neu \dashAndSpace die erste Publikation zu diesem Verfahren wurde bereits 1913 von Joseph J. Thomson veröffentlicht\todo[fancyline]{bib erzeugen und Quelle hier angeben}. Ursprünglich zur Analyse von Isotopen wurde die Technik kontinuierlich weiterentwickelt, sodass mit heutigen Geräten auch Proteine identifiziert werden können.
+
+Heutige Massenspektrometer existieren in verschiedenen Varianten. Allen gemeinsam ist, dass die Probe zunächst ionisiert wird und im zweiten Schritt nach ihrem Masse-zu-Ladung-Verhältnis ($m/z$) getrennt wird. Im letzten Schritt wird mithilfe eines Detektors die getrennten Ionen erfasst und in einem sog. Massenspektrogramm sichtbar gemacht. Abbildung \ref{fig:Massenspektrogramm} zeigt ein Massenspektrogramm einer Amminosäurensequenz der Länge 6.
+
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}[scale=1.75]
+        \def\xmin{0.9}
+        \def\xmax{7.8}
+        \def\xfactor{100}
+        \def\ymin{0.0}
+        \def\ymax{5.0}
+        \def\yfactor{20}
+
+        % Header
+        \node[align=left] (h1) at (2.5, \ymax+0.5) {\scriptsize trypmyo01\#406-421\space\space RT: 14.22-14.63 AV:5 NL: 9.98E5\\\scriptsize T: +c d Full ms2 374.72@25.00[90.00-760.00]};
+
+        %%%%% BEGIN X-Achse %%%%%
+        \foreach \x in {100, 150, ..., 750}
+        {
+            \draw (\x/\xfactor, \ymin) node[below] {\scriptsize\x};
+            \draw (\x/\xfactor, \ymin) -- (\x/\xfactor, \ymin-0.05);
+        }
+        \foreach \x in {100, 110, ..., 750}
+        {
+            \draw (\x/\xfactor, \ymin) -- (\x/\xfactor, \ymin-0.025);
+        }
+        \draw (\xmin, \ymin) -- (\xmax, \ymin);
+        \node[below] (XName) at (\xmax/2+\xmin/2, -0.2) {$m/z$};
+        %%%%% END X-Achse %%%%%
+
+        %%%%% BEGIN Y-Achse %%%%%
+        \foreach \y in {0, 10, ..., 100}
+        {
+            \draw (\xmin, \y/\yfactor) node[left] {\scriptsize\y};
+            \draw (\xmin, \y/\yfactor) -- (\xmin-0.05, \y/\yfactor);
+        }
+        \foreach \y in {0, 1, ..., 100}
+        {
+            \draw (\xmin, \y/\yfactor) -- (\xmin-0.025, \y/\yfactor);
+        }
+        \draw(\xmin, \ymin) -- (\xmin, \ymax);
+        \node[rotate=90] (YName) at (\xmin/2, \ymax/2+\ymin/2) {Relative Abundance};
+        %%%%% END Y-Achse %%%%%
+
+        % Signale
+        % Hauptpeaks
+        \foreach \x/\y/\xoffset in
+        {
+            120.1/3/0, 157.0/18/0, 175.1/5/0, 184.9/47/0, 282.4/3/0, 301.9/8/0, 322.1/12/0, 344.2/5/0, 427.0/4/-15, 435.1/32/0, 530.0/1/-5, 564.1/86/0, 574.0/16/+14, 627.6/19/0, 677.3/61/0, 682.7/23/+18, 699.1/15/+8, 737.2/19/0}
+        {
+            \draw (\x/\xfactor, \ymin) -- (\x/\xfactor, \y/\yfactor);
+            \node[above] at (\x/\xfactor+\xoffset/\xfactor, \y/\yfactor) {\scriptsize\x};
+        }
+        % Nebenpeaks
+        % Werte basieren auf N_Peaks.c
+        \foreach \x/\y in
+        {
+            113/1.4, 114/1.0, 116/1.8, 116/1.4, 123/1.2, 118/1.7, 122/1.1, 112/1.6, 136/2.8, 121/1.9, 150/1.4, 145/2.8, 124/2.8, 125/1.7, 141/1.0, 172/2.5, 158/1.8, 179/1.6, 148/1.5, 112/2.1, 130/2.9, 111/1.9, 179/1.3, 203/2.0, 137/2.7, 138/2.5, 190/1.3, 193/1.8, 110/2.5, 111/1.9, 202/1.5, 172/1.7, 145/1.6, 111/2.2, 112/2.1, 253/1.7, 146/1.5, 184/1.8, 113/1.4, 113/1.1, 192/2.2, 274/1.8, 236/2.9, 113/1.5, 286/1.3, 202/1.3, 297/1.3, 110/2.1, 112/1.7, 308/1.2, 260/1.1, 110/2.3, 268/1.5, 219/1.4, 326/1.0, 276/2.0, 166/2.4, 168/2.4, 344/2.2, 169/1.3, 173/1.7, 234/2.9, 235/1.2, 302/1.9, 369/2.8, 112/2.9, 242/2.9, 178/1.5, 315/2.5, 249/1.7, 253/2.4, 112/1.4, 184/1.1, 329/1.1, 113/2.2, 112/1.6, 417/2.8, 344/2.1, 111/1.0, 350/1.1, 271/1.8, 274/2.4, 358/2.3, 111/1.1, 363/1.4, 113/1.2, 368/2.0, 197/1.9, 464/2.8, 202/1.9, 383/2.0, 385/2.6, 112/2.9, 113/2.2, 205/2.7, 398/2.2, 305/2.6, 305/2.2, 406/2.4, 410/1.1, 112/1.9, 112/1.7, 314/2.7, 422/2.6, 113/2.3, 320/2.2, 534/2.9, 325/2.6, 218/1.2, 437/2.0, 552/9.1, 113/1.2, 446/2.0, 110/2.3, 566/9.8, 341/1.1, 112/2.3, 230/2.5, 464/2.5, 348/2.5, 592/15.6, 594/17.6, 234/2.7, 358/1.5, 360/1.5, 613/7.8, 237/2.2, 240/2.9, 239/2.9, 498/1.8, 630/10.4, 113/2.4, 374/1.1, 243/2.5, 246/2.3, 245/1.0, 110/2.8, 660/7.2, 526/1.2, 390/2.5, 391/2.5, 535/2.4, 536/1.7, 256/1.3, 545/2.7, 255/2.8, 551/15.6, 553/9.1, 702/8.4, 260/1.5, 713/18.2, 716/16.9, 262/1.0, 113/2.5, 573/10.4, 575/7.8, 266/2.3, 425/1.3, 742/13.6, 428/1.0, 430/1.7, 432/2.8, 598/10.4, 113/2.0, 113/2.9, 606/14.3, 111/1.8, 611/12.3, 281/2.3, 456/1.4, 113/1.3, 113/1.3, 111/1.0, 466/1.2, 646/7.2, 469/2.0, 110/2.0, 475/1.7, 656/12.3, 476/2.6, 663/16.2, 297/2.2, 671/7.2, 301/1.5, 301/2.8, 302/2.0, 110/2.8, 113/1.4, 111/1.2, 110/1.6, 112/1.1, 510/1.0
+        }
+        {
+            \draw (\x/\xfactor, \ymin) -- (\x/\xfactor, \y/\yfactor);
+        }
+
+        % Intensity Hinweis
+        \draw(5.6, \ymax+0.2) -- (\xmax, \ymax+0.2);
+        \draw(5.6, \ymax+0.2) -- (5.6, \ymax+0.1);
+        \draw(\xmax, \ymax+0.2) -- (\xmax, \ymax+0.1);
+        \node[below] at (5.6/2+\xmax/2, \ymax+0.2) {\scriptsize x50};
+        \node[below] at (5.6/2+\xmax/2, \ymax+0.2-0.125) {\scriptsize (intensity increased)};
+    \end{tikzpicture}
+    \caption{Massenspektrogramm der Amminosäurensequenz \texttt{A-L/I-E-L/I-F-R}}
+    \label{fig:Massenspektrogramm}
+\end{figure}
+
+
+
 
 \end{document}
