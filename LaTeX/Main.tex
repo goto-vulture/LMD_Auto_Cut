@@ -15,6 +15,7 @@
 \setlength{\marginparwidth}{2cm} % Notwendig, um ToDo Hinweise vernünftig anzuzeigen
 \usepackage{todonotes}
 \usepackage[style=super]{glossaries}
+\usepackage{glossaries-extra}
 \usepackage{tikz-uml}
 \graphicspath{{./}{./Images}}
 
@@ -35,19 +36,23 @@
 \section{Zusammenfassung}\label{s:Zusammenfassung}
 Der Bereich der Immunbiologie beschäftigt sich in erster Linie mit Aspekten der Immunantwort. Dafür müssen spezifische Areale von Gewebeproben für eine weitere Analyse isoliert werden. Die \gls{lmd} ermöglicht das gezielte Ausschneiden eben solcher Areale. Bisher erfolgt die Bedienung manuell; das heißt von jedem Areal wird händisch die Umrandung eingzeichnet. Dies führt dazu, dass teilweise mehrere Stunden nötig sind, nur um eine Probe zu bearbeiten.
 
-Das Ziel dieser Abschlussarbeit ist eine möglichst weitgehende Automatisierung mit der zusätzlichen Nebenbedingung, dass am Ende ein Workflow zur Verfügung steht, der auch von Nicht-ITlern verwendet werden kann. Grund-sätzlich existieren bereits Lösungsansätze um dieses Problem zu beheben. Jedoch ist keiner dieser Ansätze in der Lage für das vorliegende Gerät (\todo[fancyline]{Genauen Namen des LMD Gerätes einfügen}) eine Bedienung ohne tiefere IT Kenntnisse zu ermöglichen. In dieser Arbeit wurde eine Recherche über mögliche Bibliohtheken sowie bereits vorhandener Software durchgeführt und eine Software bereitgestellt, die mithilfe von frei verfügbaren Bibliohtheken passende Exportdateien erstellt, die die Software des \gls{lmd}-Gerätes einlesen und verarbeiten kann.
+Das Ziel dieser Abschlussarbeit ist eine möglichst weitgehende Automatisierung mit der zusätzlichen Nebenbedingung, dass am Ende ein Workflow zur Verfügung steht, der auch von Nicht-ITlern verwendet werden kann. Grundsätzlich existieren bereits Lösungsansätze um dieses Problem zu beheben. Jedoch ist keiner dieser Ansätze in der Lage für das vorliegende Gerät (\todo[fancyline]{Genauen Namen des LMD Gerätes einfügen}) eine Bedienung ohne tiefere IT Kenntnisse zu ermöglichen. In dieser Arbeit wurde eine Recherche über mögliche Bibliohtheken sowie bereits vorhandener Software durchgeführt und eine Software bereitgestellt, die mithilfe von frei verfügbaren Bibliohtheken passende Exportdateien erstellt, die die Software des \gls{lmd}-Gerätes einlesen und verarbeiten kann.
 \newpage
 
 \tableofcontents
 \newpage
 
-\section{Aktueller Stand}\label{s:AktuellerStand}
-Mithilfe der \gls{ms} lässt sich die Masse von Molekülen messen. Dadurch lassen sich u.a. Proteine identifizieren. Dies ist insb. im Bereich der Biologie (und daher auch in der Immunbiologie) relevant, da vielerlei Prozesse maßgeblich durch Proteine gesteuert werden. Im Kapitel \ref{ss:Massenspektrometrie} wird das Grundverfahren beschrieben.
+\section{Einleitung}\label{s:Einleitung}
+Proteine befinden sich in jeder Zelle und sind durch ihre Vielseitigkeit in vielen chemischen und physikalischen Prozessen involviert. Gemeinhin werden sie daher auch als \gerquot{Werkzeug der Zelle} bezeichnet. Das Vorhandensein von bestimmten Proteinen entscheidet daher maßgeblich über die Funktion einer Zelle. Folglich wird der Analyse aller Proteine \dashAndSpace dem sog. Proteom \dashAndSpace eine besondere Bedeutung zugeordnet. Dabei ist sowohl das zellspezifische Proteom als auch das von einem Gewebearel für die Wissenschaft interessant. Mit der Unterstützung von der \glsxtrlong{lmd} lassen sich genau die relevanten Bereiche einer Probe isolieren. Kapitel \ref{ss:Lasermikrodissektion} befasst sich mit der Technik, die in der \glsxtrlong{lmd} verwendet wird.
+
+Durch die Bedeutung der Proteine in Organismen kann man bereits durch das Vorhandensein eines spezifischen Proteins Rückschlüsse auf Zellreaktionen durchführen. So belegen z.B. Immunglobuline gegen das Protein \gls{gad65} das Vorliegen eines Autoimmunprozesses\todo[fancyline]{Daily Beleg}. Noch aussagekräftiger wird das Auftreten von Proteinen, wenn diese als Proteohormon, also explizit für die Kommunikation zwischen Zellen, synthetisiert wurden. Ein Beispiel: Das Auftreten von \gls{bk} zeugt von einer Steigerung des Schmerzempfindens, welches wiederum eine Reaktion bei Verletzungen ist.\todo[fancyline]{Ein paar Infos wären nett \dots}
+
+Das Vorhandensein von Proteinen lässt sich mithilfe der \gls{ms} nachweisen. Im Kapitel \ref{ss:Massenspektrometrie} wird dieses Verfahren näher beschrieben.
 
 \subsection{Massenspektrometrie}\label{ss:Massenspektrometrie}
-Das Grundverfahren hinter der \gls{ms} ist nicht neu \dashAndSpace die erste Publikation zu diesem Verfahren wurde bereits 1913 von Joseph J. Thomson veröffentlicht\todo[fancyline]{bib erzeugen und Quelle hier angeben}. Ursprünglich zur Analyse von Isotopen wurde die Technik kontinuierlich weiterentwickelt, sodass mit heutigen Geräten auch Proteine identifiziert werden können.
+Das Grundverfahren hinter der \gls{ms} ist nicht neu \dashAndSpace die erste Publikation zu diesem Verfahren wurde bereits 1913 von Joseph J. Thomson veröffentlicht\todo[fancyline]{bib erzeugen und Quelle hier angeben}. Ursprünglich zur Analyse von Isotopen wurde die Technik kontinuierlich weiterentwickelt, sodass mit heutigen Geräten auch Peptidsequenzen (und dadurch auch Proteine) identifiziert werden können.
 
-Heutige Massenspektrometer existieren in verschiedenen Varianten. Allen gemeinsam ist, dass die Probe zunächst ionisiert wird und im zweiten Schritt nach ihrem Masse-zu-Ladung-Verhältnis ($m/z$) getrennt wird. Im letzten Schritt wird mithilfe eines Detektors die getrennten Ionen erfasst und in einem sog. Massenspektrogramm sichtbar gemacht. Abbildung \ref{fig:Massenspektrogramm} zeigt ein Massenspektrogramm einer Amminosäurensequenz der Länge 6.
+Aktuelle Massenspektrometer existieren in verschiedenen Varianten. Allen gemeinsam ist, dass die Probe zunächst ionisiert wird und im zweiten Schritt nach ihrem Masse-zu-Ladung-Verhältnis ($m/z$) getrennt wird. Im letzten Schritt wird mithilfe eines Detektors die getrennten Ionen erfasst und in einem sog. Massenspektrogramm sichtbar gemacht. Ein Massenspektrogramm zeigt Signale (sog. Peaks) mit ihrer relativen Häufigkeit an spezifischen $m/z$ Positionen. Das Auftreten bestimmter Peaks an bestimmten Stellen ist für Moleküle deterministisch und kann daher als eine Art \gerquot{Fingerabdruck} eben jener Moleküle angesehen werden. Deshalb lässt sich mithilfe eines Massenspektrogramms rückschließen was sich in einer Probe befunden hat. Abbildung \ref{fig:Massenspektrogramm} zeigt ein Massenspektrogramm einer Amminosäurensequenz der Länge 6.
 
 \begin{figure}[ht]
     \centering
@@ -91,7 +96,7 @@ Heutige Massenspektrometer existieren in verschiedenen Varianten. Allen gemeinsa
         %%%%% END Y-Achse %%%%%
 
         % Signale
-        % Hauptpeaks
+        %%%%% BEGIN Hauptpeaks %%%%%
         \foreach \x/\y/\xoffset in
         {
             120.1/3/0, 157.0/18/0, 175.1/5/0, 184.9/47/0, 282.4/3/0, 301.9/8/0, 322.1/12/0, 344.2/5/0, 427.0/4/-15, 435.1/32/0, 530.0/1/-5, 564.1/86/0, 574.0/16/+14, 627.6/19/0, 677.3/61/0, 682.7/23/+18, 699.1/15/+8, 737.2/19/0}
@@ -99,7 +104,9 @@ Heutige Massenspektrometer existieren in verschiedenen Varianten. Allen gemeinsa
             \draw (\x/\xfactor, \ymin) -- (\x/\xfactor, \y/\yfactor);
             \node[above] at (\x/\xfactor+\xoffset/\xfactor, \y/\yfactor) {\scriptsize\x};
         }
-        % Nebenpeaks
+        %%%%% END Hauptpeaks %%%%%
+
+        %%%%% BEGIN Nebenpeaks %%%%%
         % Werte basieren auf N_Peaks.c
         \foreach \x/\y in
         {
@@ -108,6 +115,7 @@ Heutige Massenspektrometer existieren in verschiedenen Varianten. Allen gemeinsa
         {
             \draw (\x/\xfactor, \ymin) -- (\x/\xfactor, \y/\yfactor);
         }
+        %%%%% END Nebenpeaks %%%%%
 
         % Intensity Hinweis
         \draw(5.6, \ymax+0.2) -- (\xmax, \ymax+0.2);
@@ -116,9 +124,23 @@ Heutige Massenspektrometer existieren in verschiedenen Varianten. Allen gemeinsa
         \node[below] at (5.6/2+\xmax/2, \ymax+0.2) {\scriptsize x50};
         \node[below] at (5.6/2+\xmax/2, \ymax+0.2-0.125) {\scriptsize (intensity increased)};
     \end{tikzpicture}
-    \caption{Massenspektrogramm der Amminosäurensequenz \texttt{A-L/I-E-L/I-F-R}}
+    \caption{Massenspektrogramm der Amminosäurensequenz \texttt{A} -- \texttt{L/I} -- \texttt{E} -- \texttt{L/I} -- \texttt{F} -- \texttt{R} Grafik basiert auf: \dots}
     \label{fig:Massenspektrogramm}
 \end{figure}
+
+\subsection{Lasermikrodissektion}\label{ss:Lasermikrodissektion}
+
+% Gleichwohl die Genauigkeit von Massenspektrometern von den verwendeten Verfahren abhängt und es auch noch zusätzlich dazu gerätespezifische Toleranzen gibt, reagieren alle Geräte empfindlich auf Fremdkörper. Komplett vermeiden lässt sich solch eine Kontamination nicht. Dennoch ist es das Ziel diese möglichst zu minimieren.
+
+\subsection{Ziel der Abschlussarbeit}\label{ss:ZielDerAbschlussarbeit}
+Das Ziel dieser Arbeit ist das Ermitteln und Bereitstellen eines Workflows, der das Ausschneiden möglichst weit automatisiert. Zusätzlich mit dem besonderen Fokus, dass dieser Workflow auch möglichst von Nicht-ITlern ohne Unterstützung einer kundigen Person verwendet werden kann. Am Ende müssen folgende Punkte geschrieben bzw. entwickelt werden:
+\begin{itemize}
+    \item Programm, Script, o.ä., welches die Automatisierung ermöglicht
+    \item Nutzerhandbuch
+    \item Umfassende Dokumentation
+    \item Hinweise/Ideen über weitere optionale Features
+\end{itemize}
+
 
 
 
