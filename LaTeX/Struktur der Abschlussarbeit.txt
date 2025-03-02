@@ -1,21 +1,35 @@
+##### Informationen von Axel #####
+* 60 - 80 Seiten
+* Im Anhang: Details zur Implementierung; UML-Diagramme und Co.
+* Anhang darf ruhig groß sein
+* Methoden -> Implementierung -> Anhang zu UML-Diagramme
+* git Repo am Ende öffentlich machen
+* Für einen Überblick: SS verwenden
+* Ein paar SS machen - z.B. ein Übersichtsbild der GUI
+* Ergebnisse -> Kalibrationsproblem
+
+
+
+
+
 - Tabellenverzeichnis (falls erforderlich)
 - Abbildungsverzeichnis
-- Abkuerzungsverzeichnis
+- Abkürzungsverzeichnis
 
 - Einleitung
-    * Gewebeduennschnitte
+    * Gewebedünnschnitte
     * Ziel der Arbeit
 
 - Aktueller Stand
     * Bisher verwendeter Workflow
-    * Faerbungsprozess
+    * Färbungsprozess
         # Biologischer Hintergrund
-        # Scheiden und Praeparieren der Proben
+        # Scheiden und Präparieren der Proben
         # Bilderzeugung
     * Lasermikrodissektion
         # Kalibrationsproblem
     * Massenspektrometrie
-    * Verfuegbare Software
+    * Verfügbare Software
         # Cellpose
         # pyLMD
         # qupath
@@ -29,7 +43,6 @@
     * Bereitstellung einer GUI
     * Dateiexport
     * Optimierungen
-        # Fehlerkorrektur des XML-Importes
         # Wahl des Backends
         # Mip-Mapping
         # Usability
@@ -45,16 +58,15 @@
 
 
 
->>>>> Fragen und Kommentare zu einigen Punkten <<<<<
-
-Q: Einleitung->Gewebeduennschnitte: Ich bin mir nicht ganz sicher welchen Aspekt man am Anfang vorbringen soll; Man koennte auch direkt die Lasermikrodissektion anbringen.
+Q/A
+Q: Einleitung->Gewebedünnschnitte: Ich bin mir nicht ganz sicher welchen Aspekt man am Anfang vorbringen soll; Man könnte auch direkt die Lasermikrodissektion anbringen
 A: Die technische Seite der Gewebeschnitte und die LMD brauchst Du nicht unbedingt im Detail beschreiben. Mir würde es eher um die Bioinformatische Fragestellung und Umsetzung gehen.
 
-Q: Aktueller Stand->Bisher verwendeter Workflow: Eine Zusammenfassung wie aktuell der Workflow stattfindet; wo es Potenzial fuer Automatisierung gibt und wo mein Tool eingreifen wuerde. Oder sollte ich den Fokus auf den Teil richten, den ich versuche zu verbessern?
+Q: Aktueller Stand->Bisher verwendeter Workflow: Eine Zusammenfassung wie aktuell der Workflow stattfindet; wo es Potenzial für Automatisierung gibt und wo mein Tool eingreifen würde
 A: Wir hatten ja nicht wirklich einen guten Algorithmus. Also so beschreiben wie Du schreibst.
 
-Q: Aktueller Stand->Faerbungsprozess: Beschreibung wie man vom einen Gewebeschnitt zu den Bildern kommt. Was glaubst du wie ausfuehrlich sollte dieser Punkt sein?
+Q: Aktueller Stand->Färbungsprozess: Beschreibung wie man vom einen Gewebeschnitt zu den Bildern kommt. Was glaubst du wie ausführlich sollte dieser Punkt sein?
 A: Nicht ausführlich, wenn überhaupt. Konzentriere Dich eher auf die Bioinf Umsetzung.
 
-Q: Aktueller Stand->Massenspektrometrie: Am Ende macht man ja den ganzen Aufwand hauptsaechlich fuer gute MS Proben. Man koennte diese Geraete hier ebenfalls erlaeutern; die Frage dabei ist nur, ob dies nicht vielleicht etwas zu Off-Topic ist.
-A: Kurz als Ziel erwähnen. Also Gewebeareal und Zellspezifische Proteom Analysen durch Mass spec.
+Q: Aktueller Stand->Massenspektrometrie: Am Ende macht man ja den ganzen Aufwand hauptsächlich für gute MS Proben. Man könnte die Funktionsweise hier ebenfalls erläutern; die Frage dabei ist nur, ob dies nicht vielleicht etwas zu Off-Topic ist
+A: Kurz als Ziel erwähnen. Also Gewebeareal und Zellspezifische Proteom Analysen durch Mass spec
