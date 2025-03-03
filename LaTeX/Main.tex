@@ -11,13 +11,14 @@
 \usepackage{authoraftertitle}
 \usepackage{nameref}
 \usepackage{ifthen}
+\usepackage{url}
 \usepackage{subfigure}
 \setlength{\marginparwidth}{2cm} % Notwendig, um ToDo Hinweise vernünftig anzuzeigen
 \usepackage{todonotes}
 \usepackage[style=super]{glossaries}
 \usepackage{glossaries-extra}
 \usepackage{tikz-uml}
-\graphicspath{{./}{./Images}}
+\graphicspath{{./}{./Images}{./img}}
 
 \makeglossaries
 \input{Acros.tex}
@@ -33,15 +34,18 @@
 \printglossary[title={Abkürzungsverzeichnis}]
 \newpage
 
+%%%%% %%%%% %%%%% %%%%% %%%%% BEGIN Zusammenfassung %%%%% %%%%% %%%%% %%%%% %%%%%
 \section{Zusammenfassung}\label{s:Zusammenfassung}
 Der Bereich der Immunbiologie beschäftigt sich in erster Linie mit Aspekten der Immunantwort. Dafür müssen spezifische Areale von Gewebeproben für eine weitere Analyse isoliert werden. Die \gls{lmd} ermöglicht das gezielte Ausschneiden eben solcher Areale. Bisher erfolgt die Bedienung manuell; das heißt von jedem Areal wird händisch die Umrandung eingzeichnet. Dies führt dazu, dass teilweise mehrere Stunden nötig sind, nur um eine Probe zu bearbeiten.
 
 Das Ziel dieser Abschlussarbeit ist eine möglichst weitgehende Automatisierung mit der zusätzlichen Nebenbedingung, dass am Ende ein Workflow zur Verfügung steht, der auch von Nicht-ITlern verwendet werden kann. Grundsätzlich existieren bereits Lösungsansätze um dieses Problem zu beheben. Jedoch ist keiner dieser Ansätze in der Lage für das vorliegende Gerät (\todo[fancyline]{Genauen Namen des LMD Gerätes einfügen}) eine Bedienung ohne tiefere IT Kenntnisse zu ermöglichen. In dieser Arbeit wurde eine Recherche über mögliche Bibliohtheken sowie bereits vorhandener Software durchgeführt und eine Software bereitgestellt, die mithilfe von frei verfügbaren Bibliohtheken passende Exportdateien erstellt, die die Software des \gls{lmd}-Gerätes einlesen und verarbeiten kann.
 \newpage
+%%%%% %%%%% %%%%% %%%%% %%%%% END Zusammenfassung %%%%% %%%%% %%%%% %%%%% %%%%%
 
 \tableofcontents
 \newpage
 
+%%%%% %%%%% %%%%% %%%%% %%%%% BEGIN Einleitung %%%%% %%%%% %%%%% %%%%% %%%%%
 \section{Einleitung}\label{s:Einleitung}
 Proteine befinden sich in jeder Zelle und sind durch ihre Vielseitigkeit in vielen chemischen und physikalischen Prozessen involviert. Gemeinhin werden sie daher auch als \gerquot{Werkzeug der Zelle} bezeichnet. Das Vorhandensein von bestimmten Proteinen entscheidet daher maßgeblich über die Funktion einer Zelle. Folglich wird der Analyse aller Proteine \dashAndSpace dem sog. Proteom \dashAndSpace eine besondere Bedeutung zugeordnet. Dabei ist sowohl das zellspezifische Proteom als auch das von einem Gewebearel für die Wissenschaft interessant. Mit der Unterstützung von der \glsxtrlong{lmd} lassen sich genau die relevanten Bereiche einer Probe isolieren. Kapitel \ref{ss:Lasermikrodissektion} befasst sich mit der Technik, die in der \glsxtrlong{lmd} verwendet wird.
 
@@ -51,6 +55,8 @@ Das Vorhandensein von Proteinen lässt sich mithilfe der \gls{ms} nachweisen. Im
 
 \subsection{Massenspektrometrie}\label{ss:Massenspektrometrie}
 Das Grundverfahren hinter der \gls{ms} ist nicht neu \dashAndSpace die erste Publikation zu diesem Verfahren wurde bereits 1913 von Joseph J. Thomson veröffentlicht\todo[fancyline]{bib erzeugen und Quelle hier angeben}. Ursprünglich zur Analyse von Isotopen wurde die Technik kontinuierlich weiterentwickelt, sodass mit heutigen Geräten auch Peptidsequenzen (und dadurch auch Proteine) identifiziert werden können.
+
+\todo[fancyline]{Soll ich noch ein konkretes Verfahren beschreiben? Oder reicht die hier allgemin verwendete Beschreibung?}
 
 Aktuelle Massenspektrometer existieren in verschiedenen Varianten. Allen gemeinsam ist, dass die Probe zunächst ionisiert wird und im zweiten Schritt nach ihrem Masse-zu-Ladung-Verhältnis ($m/z$) getrennt wird. Im letzten Schritt wird mithilfe eines Detektors die getrennten Ionen erfasst und in einem sog. Massenspektrogramm sichtbar gemacht. Ein Massenspektrogramm zeigt Signale (sog. Peaks) mit ihrer relativen Häufigkeit an spezifischen $m/z$ Positionen. Das Auftreten bestimmter Peaks an bestimmten Stellen ist für Moleküle deterministisch und kann daher als eine Art \gerquot{Fingerabdruck} eben jener Moleküle angesehen werden. Deshalb lässt sich mithilfe eines Massenspektrogramms rückschließen was sich in einer Probe befunden hat. Abbildung \ref{fig:Massenspektrogramm} zeigt ein Massenspektrogramm einer Amminosäurensequenz der Länge 6.
 
@@ -124,13 +130,20 @@ Aktuelle Massenspektrometer existieren in verschiedenen Varianten. Allen gemeins
         \node[below] at (5.6/2+\xmax/2, \ymax+0.2) {\scriptsize x50};
         \node[below] at (5.6/2+\xmax/2, \ymax+0.2-0.125) {\scriptsize (intensity increased)};
     \end{tikzpicture}
-    \caption{Massenspektrogramm der Amminosäurensequenz \texttt{A} -- \texttt{L/I} -- \texttt{E} -- \texttt{L/I} -- \texttt{F} -- \texttt{R} Grafik basiert auf: \dots}
+    \caption{Massenspektrogramm der Amminosäurensequenz \texttt{A} -- \texttt{L/I} -- \texttt{E} -- \texttt{L/I} -- \texttt{F} -- \texttt{R} Grafik basiert auf Unterrichtsmaterialien des Moduls \gerquot{Bioinformatics for Proteomics} der \gls{rub}}
     \label{fig:Massenspektrogramm}
 \end{figure}
 
-\subsection{Lasermikrodissektion}\label{ss:Lasermikrodissektion}
+Gleichwohl die Genauigkeit von Massenspektrometern von den verwendeten Verfahren abhängt und es auch noch zusätzlich dazu gerätespezifische Toleranzen gibt, reagieren alle Geräte empfindlich auf Fremdkörper. Komplett vermeiden lässt sich solch eine Kontamination zwar nicht. Daher haben den meisten Verarbeitungsschritte das Ziel die Probe zu reinigen. Und im kompletten Verarbeitungsprozess befindet sich die \gls{ms} deshalb stets am Ende. Abbildung \ref{fig:BisherVerwendeterWorkflow} zeigt dies im Workflow von frischen \gls{ffpe} Proben bis hin zur Anwendung am \gls{ms}-Gerät.
 
-% Gleichwohl die Genauigkeit von Massenspektrometern von den verwendeten Verfahren abhängt und es auch noch zusätzlich dazu gerätespezifische Toleranzen gibt, reagieren alle Geräte empfindlich auf Fremdkörper. Komplett vermeiden lässt sich solch eine Kontamination nicht. Dennoch ist es das Ziel diese möglichst zu minimieren.
+\subsection{Lasermikrodissektion}\label{ss:Lasermikrodissektion}
+Die Lasermikrodissektion ist ein auf ein Mikroskop-basierendes Verfahren, um gezielt bestimmte Areale (sog. \gls{roi}) aus einer Probe hinauszutrennen. Mit der Unterstützung eines Lasers wird die \gls{roi} an den Rändern von der übrigen Probe gelöst. Im internationalen Bereich wird das Verfahren auch \gerquot{\gls{lcm}} genannt.
+
+Die Lasermikrodissektion wurde in der Mitte des 1990er unter der Leitung von Dr. Emmert-Buck am National Institutes of
+Health, Bethesda, MD, USA entwickelt \cite{OverviewLaserMicrodissectionTechnologies}. Ursprünglich mit der Zielsetzung Tumorgewebe \dashAndSpace insb. Prostata-Tumore \dashAndSpace für die weitere Analyse zu isolieren.
+
+Bevor es dieses Verfahren gab bestand das Problem, dass gezielte Areale nur mechanisch hinausgetrennt werden konnte. Dies ist nur
+
 
 \subsection{Ziel der Abschlussarbeit}\label{ss:ZielDerAbschlussarbeit}
 Das Ziel dieser Arbeit ist das Ermitteln und Bereitstellen eines Workflows, der das Ausschneiden möglichst weit automatisiert. Zusätzlich mit dem besonderen Fokus, dass dieser Workflow auch möglichst von Nicht-ITlern ohne Unterstützung einer kundigen Person verwendet werden kann. Am Ende müssen folgende Punkte geschrieben bzw. entwickelt werden:
@@ -140,9 +153,43 @@ Das Ziel dieser Arbeit ist das Ermitteln und Bereitstellen eines Workflows, der 
     \item Umfassende Dokumentation
     \item Hinweise/Ideen über weitere optionale Features
 \end{itemize}
+\newpage
+%%%%% %%%%% %%%%% %%%%% %%%%% END Einleitung %%%%% %%%%% %%%%% %%%%% %%%%%
 
 
 
+%%%%% %%%%% %%%%% %%%%% %%%%% BEGIN Aktueller Stand %%%%% %%%%% %%%%% %%%%% %%%%%
+\section{Aktueller Stand}\label{s:AktuellerStand}
+Im Kapitel \gerquot{\currentname} wird erklärt wie bisher der Umgang mit Proben aussieht, die mithilfe der \gls{lmd}-Technik bearbeitet werden müssen. Zusätzlich dazu werden die Rechercheergebnisse für passende Software erläutert und erklärt warum \pylmdS als Zieltechnologie gewählt wurde.
 
+\subsection{Bisher verwendeter Workflow}\label{ss:BisherVerwendeterWorkflow}
+Im bisher verwendeten Workflow ist das \gls{lmd}-Gerät ein Zwischenschritt von vielen. Dabei zeigt die Grafik \ref{fig:BisherVerwendeterWorkflow} den Einsatzbereich im Kontext der gesamten Aufbereitung von \gls{ffpe} Proben. Begrenzt auf \gls{ffpe} Proben ist das \gls{lmd}-Gerät nicht, es ist jedoch eine der meistverwendesten Probentypen für dieses Gerät\todo[fancyline]{Bin mir nicht sicher, ob das stimmt ...}.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.99\linewidth]{2025_Feb_LMD_Optimisation_FFPE_Workflow.pdf}
+    \caption{Der aktuelle Workflow}
+    \label{fig:BisherVerwendeterWorkflow}
+\end{figure}
+
+Die Problematik besteht darin, dass für eine gute Qualität vom Massenspektrogramm möglichst wenig Fremdmaterial vom \gls{lmd}-Gerät ausgeschnitten werden darf. Um dies sicherzustellen, wird aktuell der gesamte Schnittvorgang händisch durchgeführt. Für wenige Areale ist dies noch tolerierbar. Aber sobald Proben bearbeitet werden, wo einzelne Zellen oder Bereiche mit wenigen Zellen ausgeschnitten werden müssen, wird dies zu einer zeitintensiven und monotonen Arbeit. In der Grafik \ref{fig:BeispielHaendischProbe} wird eine reale Probe gezeigt. Um möglichst wenig Fremdmaterial auszuschneiden, müssen die \gls{roi}s händisch annotiert und ausgeschnitten werden.
+
+Je nach Probe kann dies 6 -- 8 Stunden\footnote{Der genaue Zeitaufwand ist zusätzlich von der Erfahrung der Person abhängig. Der Wertebereich gibt lediglich Erfahrungsberichte von Mitarbeitern des Universitätsklinikum Essen wieder.} dauern. Durch die Monotonität besteht ebenfalls die Gefahr, dass schnell Flüchtigkeitsfehler geschehen.
+
+Für Proben aus Versuchstieren kommt zusätzlich zum Zeitaufwand auch noch ein ethischer Aspekt hinzu. Es ist aus ethischer Sicht kritisch zu betrachten, dass potenziell Proben verunreinigt oder sogar unbrauchbar werden rein wegen technischer Gründe, die vermeidbar sind. Wenn es sich um menschliches Gewebe handelt, wiegt dieser Kritikpunkt noch mehr.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=1.0\linewidth]{SS_2.png}
+    \caption{Bild einer realen Probe X von Y. Die roten Regionen sollen ausgeschnitten werden, möglichst mit wenig Fremdmaterial.}
+    \label{fig:BeispielHaendischProbe}
+\end{figure}
+
+
+%%%%% %%%%% %%%%% %%%%% %%%%% END Aktueller Stand %%%%% %%%%% %%%%% %%%%% %%%%%
+
+\newpage
+\bibliographystyle{acm}
+\bibliography{LMD_Auto_Cut}
 
 \end{document}
