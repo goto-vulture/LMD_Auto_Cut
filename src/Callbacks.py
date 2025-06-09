@@ -79,7 +79,7 @@ class Callbacks():
         has_Content(newValue)
         calcParam = self.__gui.get_Calculation_Parameter()
         calcParam.set_Shape_Dilation(int(newValue))
-        print("New shape_dilation: " + newValue)
+        print("New Shape_dilation: " + newValue)
 
 # ---------------------------------------------------------------------------------------------------------------------
 

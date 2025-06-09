@@ -30,7 +30,6 @@ from MarkingPoint import *
 from pyLMDCalculation import *
 from PictureData import *
 from ProgressBarWindow import *
-#from pyLMDCalculationWindow import *
 import CalculationThreads
 
 Image.MAX_IMAGE_PIXELS=None
@@ -119,6 +118,8 @@ class Gui():
         calPointsFrame.grid_columnconfigure(0, weight=1)
         calPointsFrame.grid_columnconfigure(1, weight=1)
 
+
+        ##### BEGIN Widgets for calibration point selection #####
         labelConfig = [ ]
         for i in range(3):
             newStr = "Point " + str(i + 1) + ":"
@@ -146,13 +147,17 @@ class Gui():
             counter += 1
         calPointsFrame.pack(side=tk.TOP, fill=tk.X, expand=True, padx=Gui.__PADX, pady=Gui.__PADY, ipadx=Gui.__IPADX, ipady=Gui.__IPADY)
         self.__calPointsFrame = calPointsFrame
+        ##### END Widgets for calibration point selection #####
+
 
         # Radio buttons for the chosen picture, if two are loaded
         self.__showPictureFrame = tk.LabelFrame(widgetsFrame, text = "Show picture", font=Gui.__LABEL_FRAME_FONT,
                                                 padx=Gui.__LABELFRAME_PADX, pady=Gui.__LABELFRAME_PADY)
         self.__showPictureFrame.grid_columnconfigure(0, weight=1)
         self.__showPictureFrame.grid_columnconfigure(1, weight=1)
-        
+
+
+        ##### BEGIN Show picture widgets #####
         self.__varRbShowPictureSelection = tk.IntVar()
         showPictureRButton1 = tk.Radiobutton(self.__showPictureFrame, text="Picture 1", variable = self.__varRbShowPictureSelection,
             value = PictureData.FIRST_PIC, command = self.__callbacks.callback_Gui_Rb_Show_Picture_Changed)
@@ -171,14 +176,17 @@ class Gui():
         self.__showPictureRB.append(showPictureRButton1)
         self.__showPictureRB.append(showPictureRButton2)
         self.__showPictureFrame.pack(side=tk.TOP, fill=tk.X, expand=True, padx=Gui.__PADX, pady=Gui.__PADY, ipadx=Gui.__IPADX, ipady=Gui.__IPADY)
+        ##### END Show picture widgets #####
+
 
         # Label frame for the output path
         self.__outputPathFrame = tk.LabelFrame(widgetsFrame, text="Output path", font=Gui.__LABEL_FRAME_FONT,
                                                padx=Gui.__LABELFRAME_PADX, pady=Gui.__LABELFRAME_PADY)
         for i in range(3):
             self.__outputPathFrame.grid_columnconfigure(i, weight=[1, 3, 2][i])
-        
-        # Manual outputh path input entry and select path button
+
+
+        ##### BEGIN Manual outputh path input entry and select path button #####
         self.__pathInputLabel = tk.Label(self.__outputPathFrame, text="Path:")
         self.__pathInputLabel.grid(row=0, column=0, padx=0, pady=Gui.__LABELFRAME_PADY)
         self.__pathInputLabel["state"] = "disabled"
@@ -190,7 +198,7 @@ class Gui():
                                                 command=self.__callbacks.callback_Gui_Button_Select_Output_Path)
         self.__selectOutputPathButton.grid(row=0, column=2, padx=0, pady=Gui.__LABELFRAME_PADY)
         self.__selectOutputPathButton["state"] = "disabled"
-        
+
         self.__varRbSameAsPictureInputPath = tk.IntVar()
         sameAsPictureInputPathRButton1 = tk.Radiobutton(self.__outputPathFrame, text="Same as picture 1 path", variable = self.__varRbSameAsPictureInputPath,
             value = 0, command = self.__callbacks.callback_Gui_Rb_Same_As_Picture_Path_Changed)
@@ -198,12 +206,12 @@ class Gui():
         sameAsPictureInputPathRButton2 = tk.Radiobutton(self.__outputPathFrame, text="Same as picture 2 path", variable = self.__varRbSameAsPictureInputPath,
             value = 1, command = self.__callbacks.callback_Gui_Rb_Same_As_Picture_Path_Changed)
         sameAsPictureInputPathRButton2.grid(row = 1, column = 2)
-        
+
         self.__varManualPathCb = tk.IntVar()
         self.__manualPathCheckBox = tk.Checkbutton(self.__outputPathFrame, text="Manual path", variable=self.__varManualPathCb,
                                           onvalue=1, offvalue=0, command=self.__toggle_Manual_Path_State)
         self.__manualPathCheckBox.grid(row = 1, column = 0)
-        
+
         if self.__pictureData.is_Picture_Data_Loaded(PictureData.FIRST_PIC) == False:
             sameAsPictureInputPathRButton1["state"] = "disabled"
             sameAsPictureInputPathRButton1.select()
@@ -212,20 +220,26 @@ class Gui():
         self.__sameAsPictureInputPathRB.append(sameAsPictureInputPathRButton1)
         self.__sameAsPictureInputPathRB.append(sameAsPictureInputPathRButton2)
         self.__outputPathFrame.pack(side=tk.TOP, fill=tk.X, expand=True, padx=Gui.__PADX, pady=Gui.__PADY, ipadx=Gui.__IPADX, ipady=Gui.__IPADY)
+        ##### END Manual outputh path input entry and select path button #####
+
 
         # Label frame for Etc.
         self.__additionalSettingsFrame = tk.LabelFrame(widgetsFrame, text="Etc.", font=Gui.__LABEL_FRAME_FONT,
                                                        padx=Gui.__LABELFRAME_PADX, pady=Gui.__LABELFRAME_PADY)
         for i in range(3):
-            self.__additionalSettingsFrame.grid_columnconfigure(i, weight=[ 2, 1, 1 ][i])
+            self.__additionalSettingsFrame.grid_columnconfigure(i, weight=[ 4, 1, 1 ][i])
 
+
+        ##### BEGIN Auto increment checkbox #####
         self.__varAutoIncrementRb = tk.IntVar()
         self.__varAutoIncrementRb.set(0)
         self.__autoIncrementRbCheckBox = tk.Checkbutton(self.__additionalSettingsFrame, text=" Auto increment radio buttons", variable=self.__varAutoIncrementRb,
                                           onvalue=1, offvalue=0, command=self.__callbacks.callback_Gui_Toggle_AutoIncrement_Checkbox)
         self.__autoIncrementRbCheckBox.grid(row=0, column=0, padx=Gui.__LABELFRAME_PADX, pady=Gui.__LABELFRAME_PADY)
+        ##### END Auto increment checkbox #####
 
-        # Widgets for the slicing factor
+
+        ##### BEGIN Widgets for the slicing factor #####
         variable = tk.StringVar()
         variable.set(str(self.__pictureData.get_Coordinate_Slicing_Factor()))
         optionsList = []
@@ -238,11 +252,11 @@ class Gui():
         slicingFactorOptionMenuPrefix = tk.Label(self.__additionalSettingsFrame, text="Slicing factor:")
         slicingFactorOptionMenuPrefix.grid(row=0, column=1, padx=0, pady=Gui.__LABELFRAME_PADY)
         self.__additionalSettingsFrame.pack(side=tk.TOP, fill=tk.X, expand=True, padx=Gui.__PADX, pady=Gui.__PADY, ipadx=Gui.__IPADX, ipady=Gui.__IPADY)
+        ##### END Widgets for the slicing factor #####
 
-        # LabelFrame for pyLMD parameter
+
+        ##### BEGIN Widgets for pyLMD parameter #####
         self.__pylmdParameterFrame = tk.LabelFrame(widgetsFrame, text="pyLMD settings", font=Gui.__LABEL_FRAME_FONT, padx=Gui.__LABELFRAME_PADX, pady=Gui.__LABELFRAME_PADY)
-        for i in range(4):
-            self.__pylmdParameterFrame.grid_columnconfigure(i, weight=1)
 
         self.__varUseDefaultpylmdSettings = tk.IntVar()
         self.__varUseDefaultpylmdSettings.set(1)
@@ -272,35 +286,44 @@ class Gui():
         self.__pylmdOptionMenus = []
         self.__pylmdOptionsMenuSelected = []
 
-        currRow = 1
-        currCol = 0
+        counter = 0
         # Create labels, parameter and option menus
         for currWidgetData in widgetData:
             prefix = tk.Label(self.__pylmdParameterFrame, text=currWidgetData.text + ":")
-            prefix.grid(row=currRow, column=currCol, padx=0, pady=Gui.__LABELFRAME_PADY)
+            prefix.grid(row=[1, 1, 2, 2, 3, 3][counter], column=[0, 2, 0, 2, 0, 2][counter], padx=0, pady=Gui.__LABELFRAME_PADY)
             selected = tk.StringVar()
             selected.set(str(currWidgetData.default))
-            optionsList = []
-            # The upper bound shall be an valid option!
-            for i in range(currWidgetData.minVal, currWidgetData.maxVal + 1, currWidgetData.step):
-                optionsList.append(str(i))
-            option = tk.OptionMenu(self.__pylmdParameterFrame, selected, *optionsList, command=currWidgetData.callback)
-            option["state"] = "disabled" if self.__varUseDefaultpylmdSettings.get() == 1 else "active"
-            option.grid(row=currRow, column=currCol + 1, padx=Gui.__LABELFRAME_PADX, pady=Gui.__LABELFRAME_PADY)
-            if currCol + 2 >= 4:
-                currCol = 0
-                currRow += 1
-            else:
-                currCol += 2
+            option = tk.Spinbox(self.__pylmdParameterFrame, from_=currWidgetData.minVal, to=currWidgetData.maxVal,
+                                textvariable=selected, wrap=False, command=None, width=6)
+            option["state"] = "disabled" if self.__varUseDefaultpylmdSettings.get() == 1 else "normal"
+            option.grid(row=[1, 1, 2, 2, 3, 3][counter], column=[1, 3, 1, 3, 1, 3][counter], padx=Gui.__LABELFRAME_PADX, pady=Gui.__LABELFRAME_PADY)
+            counter += 1
             # Save references to the option menus
             # This is necessary to disable and enable these widgets afterwards
             self.__pylmdOptionMenus.append(option)
             self.__pylmdOptionsMenuSelected.append(selected)
+
+        for i in range(4):
+            self.__pylmdParameterFrame.grid_columnconfigure(i, weight=[3, 1, 3, 1][i])
+
+
+        # Due to issues with some Tkinter implementations; the callback can only be attached with the expected
+        # functionality after all Spinboxes were created
+        # This must not be done with a loop! I don't know why ...
+        self.__pylmdOptionMenus[0]["command"] = lambda: widgetData[0].callback(self.__pylmdOptionMenus[0].get())
+        self.__pylmdOptionMenus[1]["command"] = lambda: widgetData[1].callback(self.__pylmdOptionMenus[1].get())
+        self.__pylmdOptionMenus[2]["command"] = lambda: widgetData[2].callback(self.__pylmdOptionMenus[2].get())
+        self.__pylmdOptionMenus[3]["command"] = lambda: widgetData[3].callback(self.__pylmdOptionMenus[3].get())
+        self.__pylmdOptionMenus[4]["command"] = lambda: widgetData[4].callback(self.__pylmdOptionMenus[4].get())
+        self.__pylmdOptionMenus[5]["command"] = lambda: widgetData[5].callback(self.__pylmdOptionMenus[5].get())
         self.__pylmdParameterFrame.pack(side=tk.TOP, fill=tk.X, expand=True, padx=Gui.__PADX, pady=Gui.__PADY, ipadx=Gui.__IPADX, ipady=Gui.__IPADY)
+
         self.__calculationParameter = pyLMDCalculationParameter(shapeDilation=0, shapeErosion=0, binarySmoothing=14,
             convolutionSmoothing=15, polyCompressionFactor=30, distanceHeuristic=300)
+        ##### END Widgets for pyLMD parameter #####
 
-        # Menubar
+
+        ##### BEGIN Menubar #####
         menubar = tk.Menu(window)
         # Adding File Menu and commands
         menubarFile = tk.Menu(menubar, tearoff = 0)
@@ -312,6 +335,8 @@ class Gui():
 
         # Display the menu on the GUI
         window.config(menu = menubar)
+        ##### END Menubar #####
+
 
         # Job list with label
         self.__taskList = tk.Listbox(widgetsFrame, height=4, width=10)
@@ -341,7 +366,7 @@ class Gui():
 
         # Method that handels the resizing of some widgets when the main window will be resized
         window.bind("<Configure>", self.__resize_Gui)
-        
+
         window.protocol("WM_DELETE_WINDOW", self.__close_Gui)
 
         self.__pyLMDProcs: queue.Queue = queue.Queue()
@@ -351,25 +376,13 @@ class Gui():
         self.__updateTaskOutputThread = threading.Thread(target=self.__update_Task_List)
         self.__updateTaskOutputThreadStopFlag: bool = False
         self.__updateTaskOutputThread.start()
-        
-        # Remove potential old temp files
+
+        # Remove potential old temp files in the original folder
         # Pattern: "stdout" "_" Int ".txt"
         # or:      "stderr" "_" Int ".txt"
-        for f in os.listdir("."):
-            splittedFileName = re.split(r"[._]", f)
-            if len(splittedFileName) != 3:
-                continue
-            if splittedFileName[0] != "stdout" and splittedFileName[0] != "stderr" and splittedFileName[2] != "txt":
-                continue
-            # Is the string convertible to an int?
-            try:
-                test = int(splittedFileName[1], 10)
-            except ValueError:
-                continue
-            print("Remove temp file: " + f)
-            remove_File(f)
-            
-        
+        remove_Temp_Files_In_Path(".")
+
+
     def __del__(self) -> None:
         start("Close GUI ...")
         if self.__updateTaskOutputThread.is_alive():
@@ -411,12 +424,14 @@ class Gui():
                         self.__taskList.delete(taskListEntry)
                     self.__taskList.insert(taskListEntry, "Calculation finished at " + get_Current_Time() + " with: " + str(nextProc.returncode))
                     self.__taskList.itemconfigure(taskListEntry, fg="green" if nextProc.returncode == 0 else "red")
-                    
+
                     # Try to delete the temp files
-                    filesToRemove = [ "stdout_" + str(nextProc.pid) + ".txt", "stderr_" + str(nextProc.pid) + ".txt", "tmp.png" ]
-                    for file in filesToRemove:
-                        remove_File(file)
-                    
+                    # remove_File("stdout_" + str(nextProc.pid) + ".txt")
+                    remove_File("tmp.png")
+                    # Remove the error file only when the subprocess returned with 0
+                    if nextProc.returncode == 0:
+                        remove_File("stderr_" + str(nextProc.pid) + ".txt")
+
                     nextProc = None
                     taskListEntry += 1
                 else:
@@ -477,13 +492,13 @@ class Gui():
         #self.__markingPoints[index].get_Line2D().draw(self.__origFigure.canvas.get_renderer())
         #self.__origFigure.canvas.blit(self.__origAxes.bbox)
         end()
-        
+
     def get_Selected_Picture_Rb(self) -> int:
         return is_Int_R(self.__varRbShowPictureSelection.get())
-    
+
     def get_Same_As_Input_Picutre_Path_Rb(self) -> int:
         return is_Int_R(self.__varRbSameAsPictureInputPath.get())
-    
+
     def get_Open_Picture_Name(self, pictureSlot: int) -> str:
         is_Type(pictureSlot, int)
         returnValue: str = ""
@@ -496,14 +511,14 @@ class Gui():
             raise ValueError("Invalid picutre selected. Selected was " + str(pictureSlot) +
                 ". Valid are " + str(PictureData.FIRST_PIC) + " or " + str(PictureData.SEC_PIC))
         return is_Type_R(returnValue, str)
-    
+
     def activate_Same_As_Input_Picture_Path_Rb(self, pictureSlot: int) -> None:
         is_Type(pictureSlot, int)
         if pictureSlot != 0 and pictureSlot != 1:
             raise ValueError("Invalid picutre selected. Selected was " + str(pictureSlot) +
                 ". Valid are " + str(PictureData.FIRST_PIC) + " or " + str(PictureData.SEC_PIC))
         self.__sameAsPictureInputPathRB[pictureSlot]["state"] = "active"
-    
+
     def set_Open_Picture_Name(self, picturePath: str, pictureSlot: int) -> None:
         has_Content(picturePath)
         is_Type(pictureSlot, int)
@@ -514,9 +529,9 @@ class Gui():
         else:
             raise ValueError("Invalid picutre selected. Selected was " + str(pictureSlot) +
                 ". Valid are " + str(PictureData.FIRST_PIC) + " or " + str(PictureData.SEC_PIC))
-        
+
 # ---------------------------------------------------------------------------------------------------------------------
-        
+
     def set_Result_Path(self, resultPath: str) -> None:
         has_Content(resultPath)
         print("Result path: " + resultPath, flush=True)
@@ -543,7 +558,7 @@ class Gui():
         im.save("tmp.png")
 
         # Construct the process call
-        processCall = [ "python3", "pyLMDCalculation.py", "tmp.png" ]
+        processCall = [ "python3", "./src/pyLMDCalculation.py", "tmp.png" ]
         # Add calibration points
         for coord in calibrationCoordinates:
             is_Valid_Coordinate(coord[0])
@@ -557,7 +572,7 @@ class Gui():
         processCall.append(str(self.__calculationParameter.get_Convolution_Smoothing()))
         processCall.append(str(self.__calculationParameter.get_Poly_Compression_Factor()))
         processCall.append(str(self.__calculationParameter.get_Distance_Heuristic()))
-        
+
         # Optional: Result path
         # If not set: Path of the input picture will be used
         if len(self.__varPathInputEntry.get()) > 0:
@@ -683,18 +698,18 @@ class Gui():
         if self.__varRbShowPictureSelection.get() == PictureData.FIRST_PIC and self.__pictureData.is_Picture_Data_Loaded(PictureData.FIRST_PIC):
             self.__im.set_data(self.__pictureData.get_Picture_Data_Sliced(PictureData.FIRST_PIC))
         elif self.__varRbShowPictureSelection.get() == PictureData.SEC_PIC and self.__pictureData.is_Picture_Data_Loaded(PictureData.SEC_PIC):
-            self.__im.set_data(self.__pictureData.get_Picture_Data_Sliced(PictureData.SEC_PIC)) 
+            self.__im.set_data(self.__pictureData.get_Picture_Data_Sliced(PictureData.SEC_PIC))
         else:
             raise ValueError("Invalid combination of selected and loaded picture. Selected: " + str(self.__varRbShowPictureSelection.get()) +
                              " | Is loaded: " + str(self.__pictureData.is_Picture_Data_Loaded(self.__varRbShowPictureSelection.get())))
         self.__pyPlotCanvas.draw()
         end()
-        
+
 # ---------------------------------------------------------------------------------------------------------------------
 
     def activate_Start_Calculation_Button(self) -> None:
         self.__startCalcButton["state"] = "active"
-            
+
 # ---------------------------------------------------------------------------------------------------------------------
 
     def __toggle_Manual_Path_State(self) -> None:
@@ -719,7 +734,7 @@ class Gui():
 
     def __toggle_Pylmd_Option_Menus_State(self) -> None:
         for currOptionWidget in self.__pylmdOptionMenus:
-            currOptionWidget["state"] = "active" if currOptionWidget["state"] == "disabled" else "disabled"
+            currOptionWidget["state"] = "normal" if currOptionWidget["state"] == "disabled" else "disabled"
 
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -755,7 +770,7 @@ class Gui():
         self.__calPointsFrame.config(font=newFontFrame)
         self.__additionalSettingsFrame.config(font=newFontFrame)
         # self.__selectedDirFrame.config(font=newFontFrame)
-        
+
     def __close_Gui(self) -> None:
         if self.__updateTaskOutputThread.is_alive():
             self.__updateTaskOutputThreadStopFlag = True

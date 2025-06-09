@@ -41,7 +41,7 @@ class pyLMDCalculationParameter():
         self.__convolutionSmoothing = convolutionSmoothing
         self.__polyCompressionFactor = polyCompressionFactor
         self.__distanceHeuristic = distanceHeuristic
-        self.__outputPath = copy.deepcopy(outputPath)
+        self.__outputName = copy.deepcopy(outputPath)
 
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -52,9 +52,16 @@ class pyLMDCalculationParameter():
         strRep += "convolutionSmoothing:  " + str(self.__convolutionSmoothing) + "\n"
         strRep += "polyCompressionFactor: " + str(self.__polyCompressionFactor) + "\n"
         strRep += "distanceHeuristic:     " + str(self.__distanceHeuristic)
-        if len(self.__outputPath) > 0:
-            strRep += "\nOutputPath:            " + self.__outputPath
+        if len(self.__outputName) > 0:
+            strRep += "\nOutputPath:            " + path_Head(self.__outputName)
         return is_Type_R(strRep, str)
+
+# ---------------------------------------------------------------------------------------------------------------------
+
+    def get_Parameter_As_Str_List(self) -> list[str]:
+        result = [ str(self.__shapeDilation), str(self.__shapeErosion), str(self.__binarySmoothing),
+                   str(self.__convolutionSmoothing), str(self.__polyCompressionFactor), str(self.__distanceHeuristic) ]
+        return result
 
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -111,9 +118,15 @@ class pyLMDCalculationParameter():
 
     def get_Distance_Heuristic(self) -> int:
         return is_Type_R(self.__distanceHeuristic, int)
-    
+
+    def get_Output_Basename(self) -> str:
+        return is_Type_R(path_Basename(self.__outputName), str)
+
     def get_Output_Path(self) -> str:
-        return is_Type_R(self.__outputPath, str)
+        return is_Type_R(path_Head(self.__outputName), str)
+
+    def get_Output_Name(self) -> str:
+        return is_Type_R(self.__outputName, str)
 
 # =====================================================================================================================
 
@@ -136,7 +149,7 @@ class pyLMDCalculation():
         invalidList: list[int] = [ 1, 2 ]
         flattenPicData = self.__greyscaleData.ravel()
         unique, frequency = np.unique(flattenPicData, return_counts = True)
-        
+
         print("Step 1:", flush=True)
         start_Interval("Remove areas with the sizes: " + str(invalidList) + " ... \n")
         for i in range(len(unique)):
@@ -185,12 +198,12 @@ class pyLMDCalculation():
 
 
             sl = SegmentationLoader(config = loader_config, verbose=False)
-            
-            outputFileBasename = path_Basename(self.__calculationParameter.get_Output_Path())
-            outputFilePath = path_Head(self.__calculationParameter.get_Output_Path())
-            print("Output XML-File: ")
+
+            outputFileBasename = self.__calculationParameter.get_Output_Basename()
+            outputFilePath = self.__calculationParameter.get_Output_Path()
             print("Output file basename: " + outputFileBasename, flush=True)
             print("Output file path: " + outputFilePath, flush=True)
+            print("Output XML-File (the file for the LMD device): " + outputFileBasename + ".xml")
 
             print("Step 3:", flush=True)
             start_Interval("Create shape collection ... ")
@@ -201,9 +214,11 @@ class pyLMDCalculation():
 
             print(shape_collection.stats(), flush=True)
             # No plotting anymore because it destroys the plot on the GUI!
-            
-            shape_collection.plot(calibration = True, save_name = outputFilePath + outputFileBasename + "_Plot.png", fig_size = (12, 12))
-            shape_collection.save(self.__calculationParameter.get_Output_Path())
+
+            # Show the plot and save it
+            shape_collection.plot(calibration = True, save_name = outputFilePath + "/" + outputFileBasename + "_Plot.png", fig_size = (12, 12))
+            # Only save the plot without show it
+            #shape_collection.save(outputFilePath + "/" + outputFileBasename + "_Plot.png")
 
             self.__XML_files.append(outputFileBasename + ".xml")
             self.__PNG_files.append(outputFileBasename + "_Plot.png")
@@ -330,13 +345,13 @@ if __name__ == "__main__":
     for i in range(6):
         calPointsTemp.append(float(sys.argv[2 + i]))
     calPoints: list[list[float]] = [ [ calPointsTemp[0], calPointsTemp[1] ], [ calPointsTemp[2], calPointsTemp[3] ], [ calPointsTemp[4], calPointsTemp[5] ] ]
-    
+
     # Is there an optional output path?
     outputPath: str = ""
     if len(sys.argv) > 14:
         outputPath = sys.argv[14]
-        print("Using: \"" + outputPath + "\" as output path")
-        
+        print("Using: \"" + path_Head(sys.argv[14]) + "\" as output path")
+
     # The rest are the pyLMD settings
     param = pyLMDCalculationParameter(int(sys.argv[8]), int(sys.argv[9]), int(sys.argv[10]), int(sys.argv[11]), int(sys.argv[12]),
                                       int(sys.argv[13]), outputPath)
@@ -345,7 +360,16 @@ if __name__ == "__main__":
     print("Calibration points: " + str(calPoints))
     print("> pyLMD settings <\n" + str(param) + "\n", flush=True)
 
-    img = Image.open(fileName)
+    try:
+        img = Image.open(fileName)
+    except FileNotFoundError:
+        print("The file was not found.", file=sys.stderr, flush=True)
+    except PermissionError:
+        print("You don't have permission to read this file.", file=sys.stderr, flush=True)
+    except IOError as e:
+        print("An I/O error occurred: " + str(e), file=sys.stderr, flush=True)
+    except Exception as e:
+        print("An unexpected error occurred: " + str(e), file=sys.stderr, flush=True)
     picData = np.array(img).astype(np.uint8)
 
     # Now are all data and information available for creating the calculation object

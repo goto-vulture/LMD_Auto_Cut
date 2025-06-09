@@ -308,3 +308,16 @@ TSWLatexianTemp*
 
 # pycache
 *.pyc
+
+# Temp files
+stdout*
+stderr*
+tmp*
+
+# Test files
+Test*
+src/Test*
+
+# Picture data
+*.png
+*.tiff

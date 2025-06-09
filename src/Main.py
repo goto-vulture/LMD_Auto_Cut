@@ -11,7 +11,7 @@ def signal_Handler_SIGINT(signum: int, frame):
     print("Signal SIGINT (" + str(signum) + ") recieved ...", flush=True)
     # Do nothing ...
     #sys.exit(0)
-    
+
 def signal_Handler_SIGTERM(signum: int, frame):
     print("Signal SIGTERM (" + str(signum) + ") recieved ...", flush=True)
     sys.exit(0)
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     testIm2 = None
     picData1 = None
     picData2 = None
-        
+
     # Register the signal handler
     signal.signal(signal.SIGINT, signal_Handler_SIGINT)
     signal.signal(signal.SIGTERM, signal_Handler_SIGTERM)
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     start("Start GUI ...")
     MyGui = GUI.Gui(picData1 = picData1, picData2 = picData2, slicingFactor = 1)
     end()
-    
+
     # Wird aktuell nicht verwendet
 #     if len(testPicName1) > 0:
 #         MyGui.set_Open_Picture_Name(testPicName1, 0)
@@ -55,5 +55,5 @@ if __name__ == "__main__":
 
     # Start main loop of the GUI
     GUI.window.mainloop()
-    
+
 # =====================================================================================================================

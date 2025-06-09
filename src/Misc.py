@@ -110,7 +110,7 @@ def has_Len_In_Dimension_2(var: list, expectedDimensions: int, additionalInfo: s
         if len(obj) != expectedDimensions:
             raise TypeError("Expected list length in dimension 2: " + str(expectedDimensions) + " | Got: " + str(len(obj)) + "! " +
                             additionalInfo)
-        
+
 def is_Valid_Float(var: float, additionalInfo: str = "") -> None:
     is_Type(var, float, additionalInfo)
     if np.isnan(var):
@@ -210,9 +210,9 @@ def remove_File(fileName: str) -> None:
         print(errMsgBegin + "An I/O error occurred: " + str(e), file=sys.stderr, flush=True)
     except Exception as e:
         print(errMsgBegin + "An unexpected error occurred: " + str(e), file=sys.stderr, flush=True)
-        
+
 #----------------------------------------------------------------------------------------------------------------------
-        
+
 def path_Head(fileName: str) -> str:
     has_Content(fileName)
     head, tail = os.path.split(fileName)
@@ -227,6 +227,30 @@ def path_Basename(fileName: str) -> str:
     has_Content(fileName)
     result = os.path.splitext(os.path.basename(fileName))[0]
     return is_Type_R(result, str)
+
+#----------------------------------------------------------------------------------------------------------------------
+
+def remove_Temp_Files_In_Path(path: str) -> None:
+    has_Content(path)
+    # Remove potential old temp files
+    # Pattern: "stdout" + "_" + Int + ".txt"
+    # or:      "stderr" + "_" + Int + ".txt"
+    for f in os.listdir(path):
+        splittedFileName = re.split(r"[._]", f)
+        if len(splittedFileName) != 3:
+            continue
+        if splittedFileName[0] != "stdout" and splittedFileName[0] != "stderr" and splittedFileName[2] != "txt":
+            continue
+        # Is the string convertible to an int?
+        try:
+            test = int(splittedFileName[1], 10)
+            # An temp file will always have an integer > 0
+            if test < 0:
+                continue
+        except ValueError:
+            continue
+        print("Remove temp file: " + f, flush=True)
+        remove_File(f)
 
 #----------------------------------------------------------------------------------------------------------------------
 
