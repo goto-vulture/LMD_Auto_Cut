@@ -1,6 +1,7 @@
 from matplotlib.backend_bases import MouseButton
 from Misc import *
 from PictureData import *
+from pyLMDParameterLimits import *
 import tkinter as tk
 
 
@@ -22,7 +23,7 @@ class Callbacks():
 
     def callback_Gui_Button_Start_Calc_Event(self) -> None:
         self.__gui.start_Calc()
-        
+
 # ---------------------------------------------------------------------------------------------------------------------
 
     def callback_Gui_Button_Select_Output_Path(self) -> None:
@@ -61,6 +62,11 @@ class Callbacks():
 
 # ---------------------------------------------------------------------------------------------------------------------
 
+    def callback_Gui_Use_Default_Settings_Changed(self, newState) -> None:
+        self.__toggle_Pylmd_Option_Menus_State()
+
+# ---------------------------------------------------------------------------------------------------------------------
+
     def callback_Gui_Options_Menu_Slicing_Factor_Changed(self, newValue: str) -> None:
         has_Content(newValue)
         newValueInt = int(newValue)
@@ -79,7 +85,7 @@ class Callbacks():
         has_Content(newValue)
         calcParam = self.__gui.get_Calculation_Parameter()
         calcParam.set_Shape_Dilation(int(newValue))
-        print("New Shape_dilation: " + newValue)
+        # print("New Shape_dilation: " + newValue)
 
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -87,7 +93,7 @@ class Callbacks():
         has_Content(newValue)
         calcParam = self.__gui.get_Calculation_Parameter()
         calcParam.set_Shape_Erosion(int(newValue))
-        print("New shape_erosion: " + newValue)
+        # print("New shape_erosion: " + newValue)
 
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -95,7 +101,7 @@ class Callbacks():
         has_Content(newValue)
         calcParam = self.__gui.get_Calculation_Parameter()
         calcParam.set_Binary_Smoothing(int(newValue))
-        print("New binary_smoothing: " + newValue)
+        # print("New binary_smoothing: " + newValue)
 
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -103,7 +109,7 @@ class Callbacks():
         has_Content(newValue)
         calcParam = self.__gui.get_Calculation_Parameter()
         calcParam.set_Convolution_Smoothing(int(newValue))
-        print("New convolution_smoothing: " + newValue)
+        # print("New convolution_smoothing: " + newValue)
 
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -111,7 +117,7 @@ class Callbacks():
         has_Content(newValue)
         calcParam = self.__gui.get_Calculation_Parameter()
         calcParam.set_Poly_Compression_Factor(int(newValue))
-        print("New poly_compression_factor: " + newValue)
+        # print("New poly_compression_factor: " + newValue)
 
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -119,7 +125,7 @@ class Callbacks():
         has_Content(newValue)
         calcParam = self.__gui.get_Calculation_Parameter()
         calcParam.set_Distance_Heuristic(int(newValue))
-        print("New distance_heuristic: " + newValue)
+        # print("New distance_heuristic: " + newValue)
 
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -150,7 +156,7 @@ class Callbacks():
         # print("(" + str(x) + ", " + str(y) + ")")
         # Yes the coordinates are swapped!
         self.__gui.update_Radio_Button_Marking_Point(x, y)
-        
+
 # ---------------------------------------------------------------------------------------------------------------------
 
     def callback_Gui_Resize_Event(self, event) -> None:
@@ -160,7 +166,7 @@ class Callbacks():
         if newWidth is None or newHeight is None:
             return
         print("New figure canvas: " + str(newWidth) + " | " + str(newHeight))
-        
+
 # ---------------------------------------------------------------------------------------------------------------------
 
     def callback_Gui_Xlim_Changed(self, event) -> None:
@@ -172,7 +178,7 @@ class Callbacks():
         if (int(newXlim[0]) == int(newXlim[1])) or (int(newXlim[0]) < 0 or int(newXlim[1]) < 0):
             return
         print("New x limits: " + str(int(newXlim[0])) + " | " + str(int(newXlim[1])))
-        
+
 # ---------------------------------------------------------------------------------------------------------------------
 
     def callback_Gui_Ylim_Changed(self, event) -> None:
@@ -184,12 +190,12 @@ class Callbacks():
         if (int(newYlim[0]) == int(newYlim[1])) or (int(newYlim[0]) < 0 or int(newYlim[1]) < 0):
             return
         print("New y limits: " + str(int(newYlim[0])) + " | " + str(int(newYlim[1])))
-        
+
 # ---------------------------------------------------------------------------------------------------------------------
-        
+
     def callback_Gui_Rb_Show_Picture_Changed(self) -> None:
         self.__gui.set_Picture_Data(self.__gui.get_Selected_Picture_Rb())
-        
+
 # ---------------------------------------------------------------------------------------------------------------------
 
     def callback_Gui_Rb_Same_As_Picture_Path_Changed(self) -> None:
@@ -203,4 +209,92 @@ class Callbacks():
         # Dummy function
         i = 0
 
-# ---------------------------------------------------------------------------------------------------------------------
+# =====================================================================================================================
+
+class Validations():
+    def __init__(self, callbacks: Callbacks):
+        is_Type(callbacks, Callbacks)
+        self.__callbacks = callbacks
+
+    def validate_Spinbox_Input_Shape_Dilation(self, inputData: str) -> bool:
+        is_Type(inputData, str)
+        # An empty input must be always true, because an input via keyboard with a leading remove of the Spinbox value
+        # needs this exception
+        if len(inputData) == 0:
+            return True
+        min_: int = pyLMDParameterLimits.get_Shape_Dilation_Min()
+        max_: int = pyLMDParameterLimits.get_Shape_Dilation_Max()
+        res: bool = Validations.__real_Validation(inputData, min_, max_)
+        if res is True:
+            self.__callbacks.callback_Gui_Options_Pylmd_Parameter_Shape_Dilation(inputData)
+        return res
+
+    def validate_Spinbox_Input_Shape_Erosion(self, inputData: str) -> bool:
+        is_Type(inputData, str)
+        if len(inputData) == 0:
+            return True
+        min_: int = pyLMDParameterLimits.get_Shape_Erosion_Min()
+        max_: int = pyLMDParameterLimits.get_Shape_Erosion_Max()
+        res: bool = Validations.__real_Validation(inputData, min_, max_)
+        if res is True:
+            self.__callbacks.callback_Gui_Options_Pylmd_Parameter_Shape_Erosion(inputData)
+        return res
+
+    def validate_Spinbox_Input_Binary_Smoothing(self, inputData: str) -> bool:
+        is_Type(inputData, str)
+        if len(inputData) == 0:
+            return True
+        min_: int = pyLMDParameterLimits.get_Binary_Smoothing_Min()
+        max_: int = pyLMDParameterLimits.get_Binary_Smoothing_Max()
+        res: bool = Validations.__real_Validation(inputData, min_, max_)
+        if res is True:
+            self.__callbacks.callback_Gui_Options_Pylmd_Parameter_Binary_Smoothing(inputData)
+        return res
+
+    def validate_Spinbox_Input_Convolution_Smoothing(self, inputData: str) -> bool:
+        is_Type(inputData, str)
+        if len(inputData) == 0:
+            return True
+        min_: int = pyLMDParameterLimits.get_Convolution_Smoothing_Min()
+        max_: int = pyLMDParameterLimits.get_Convolution_Smoothing_Max()
+        res: bool = Validations.__real_Validation(inputData, min_, max_)
+        if res is True:
+            self.__callbacks.callback_Gui_Options_Pylmd_Parameter_Convolution_Smoothing(inputData)
+        return res
+
+    def validate_Spinbox_Input_Poly_Compression_Factor(self, inputData: str) -> bool:
+        is_Type(inputData, str)
+        if len(inputData) == 0:
+            return True
+        min_: int = pyLMDParameterLimits.get_Poly_Compression_Factor_Min()
+        max_: int = pyLMDParameterLimits.get_Poly_Compression_Factor_Max()
+        res: bool = Validations.__real_Validation(inputData, min_, max_)
+        if res is True:
+            self.__callbacks.callback_Gui_Options_Pylmd_Parameter_Poly_Compression_Factor(inputData)
+        return res
+
+    def validate_Spinbox_Input_Distance_Heuristic(self, inputData: str) -> bool:
+        is_Type(inputData, str)
+        if len(inputData) == 0:
+            return True
+        min_: int = pyLMDParameterLimits.get_Distance_Heuristic_Min()
+        max_: int = pyLMDParameterLimits.get_Distance_Heuristic_Max()
+        res: bool = Validations.__real_Validation(inputData, min_, max_)
+        if res is True:
+            self.__callbacks.callback_Gui_Options_Pylmd_Parameter_Distance_Heuristic(inputData)
+        return res
+
+    @staticmethod
+    def __real_Validation(inputData: str, min_: int, max_: int) -> bool:
+        is_Type(inputData, str)
+        is_Type(min_, int)
+        is_Type(max_, int)
+        if len(inputData) == 0:
+            return False
+        if not inputData.isdigit():
+            return False
+        if int(inputData) < min_ or int(inputData) > max_:
+            return False
+        return True
+
+# =====================================================================================================================

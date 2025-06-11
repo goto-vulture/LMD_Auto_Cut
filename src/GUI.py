@@ -30,6 +30,7 @@ from MarkingPoint import *
 from pyLMDCalculation import *
 from PictureData import *
 from ProgressBarWindow import *
+from pyLMDSpinboxParameter import *
 import CalculationThreads
 
 Image.MAX_IMAGE_PIXELS=None
@@ -38,19 +39,18 @@ window=tk.Tk()
 window.wm_title("Window title")
 
 
-class widgetParameter():
-    def __init__(self, text: str, callback, minVal: int, maxVal: int, default: int, step: int = 1):
-        has_Content(text)
-        is_Type(minVal, int)
-        is_Type(maxVal, int)
-        is_Type(default, int)
-        is_Type(step, int)
-        self.text = text
-        self.callback = callback
-        self.minVal = minVal
-        self.maxVal = maxVal
-        self.default = default
-        self.step = step
+def test_Func(inputData: str) -> bool:
+    print(inputData)
+    print(type(inputData))
+    if type(inputData) is not str:
+        return False
+    if len(inputData) == 0:
+        return False
+    if not inputData.isdigit():
+        return False
+
+
+    return True
 
 class Gui():
     def __init__(self, picData1 = None, picData2 = None, slicingFactor: int = 1):
@@ -72,6 +72,7 @@ class Gui():
                     + " | Orig. size: " + str(self.__pictureData.get_Picture_Data(PictureData.SEC_PIC).shape), flush=True)
 
         self.__callbacks = Callbacks(self)
+        self.__validations = Validations(self.__callbacks)
         self.__origAxes=plt.gca()
         self.__origFigure=plt.gcf()
         self.__calPointsLabel = []
@@ -265,22 +266,22 @@ class Gui():
         self.__useDefaultpylmdSettings.grid(row=0, column=0, padx=Gui.__LABELFRAME_PADX, pady=Gui.__LABELFRAME_PADY)
 
         # Option: shape_dilation
-        widgetData = [ widgetParameter(text="Shape dilation", minVal=0, maxVal=10, step=1, default=0,
+        widgetData = [ pyLMDSpinboxParameter(text="Shape dilation", **pyLMDParameterLimits.get_Shape_Dilation_All(),
             callback=self.__callbacks.callback_Gui_Options_Pylmd_Parameter_Shape_Dilation) ]
         # Option: shape_erosion
-        widgetData.append(widgetParameter(text="Shape erosion", minVal=0, maxVal=10, step=1, default=0,
+        widgetData.append(pyLMDSpinboxParameter(text="Shape erosion", **pyLMDParameterLimits.get_Shape_Erosion_All(),
             callback=self.__callbacks.callback_Gui_Options_Pylmd_Parameter_Shape_Erosion))
         # Option: binary_smoothing
-        widgetData.append(widgetParameter(text="Binary smoothing", minVal=0, maxVal=30, step=2, default=14,
+        widgetData.append(pyLMDSpinboxParameter(text="Binary smoothing", **pyLMDParameterLimits.get_Binary_Smoothing_All(),
             callback=self.__callbacks.callback_Gui_Options_Pylmd_Parameter_Binary_Smoothing))
         # Option: convolution_smoothing
-        widgetData.append(widgetParameter(text="Convolution smoothing", minVal=0, maxVal=40, step=5, default=15,
+        widgetData.append(pyLMDSpinboxParameter(text="Convolution smoothing", **pyLMDParameterLimits.get_Convolution_Smoothing_All(),
             callback=self.__callbacks.callback_Gui_Options_Pylmd_Parameter_Convolution_Smoothing))
         # Option: poly_compression_factor
-        widgetData.append(widgetParameter(text="Poly compression factor", minVal=0, maxVal=50, step=10, default=30,
+        widgetData.append(pyLMDSpinboxParameter(text="Poly compression factor", **pyLMDParameterLimits.get_Poly_Compression_Factor_All(),
             callback=self.__callbacks.callback_Gui_Options_Pylmd_Parameter_Poly_Compression_Factor))
         # Option: distance_heuristic
-        widgetData.append(widgetParameter(text="Distance Heuristic", minVal=100, maxVal=500, step=100, default=300,
+        widgetData.append(pyLMDSpinboxParameter(text="Distance Heuristic", **pyLMDParameterLimits.get_Distance_Heuristic_All(),
             callback=self.__callbacks.callback_Gui_Options_Pylmd_Parameter_Distance_Heuristic))
 
         self.__pylmdOptionMenus = []
@@ -297,6 +298,7 @@ class Gui():
                                 textvariable=selected, wrap=False, command=None, width=6)
             option["state"] = "disabled" if self.__varUseDefaultpylmdSettings.get() == 1 else "normal"
             option.grid(row=[1, 1, 2, 2, 3, 3][counter], column=[1, 3, 1, 3, 1, 3][counter], padx=Gui.__LABELFRAME_PADX, pady=Gui.__LABELFRAME_PADY)
+
             counter += 1
             # Save references to the option menus
             # This is necessary to disable and enable these widgets afterwards
@@ -316,10 +318,38 @@ class Gui():
         self.__pylmdOptionMenus[3]["command"] = lambda: widgetData[3].callback(self.__pylmdOptionMenus[3].get())
         self.__pylmdOptionMenus[4]["command"] = lambda: widgetData[4].callback(self.__pylmdOptionMenus[4].get())
         self.__pylmdOptionMenus[5]["command"] = lambda: widgetData[5].callback(self.__pylmdOptionMenus[5].get())
+
+        # Replace an empty input after the focus was lost with the min value
+        self.__pylmdOptionMenus[0].bind("<FocusOut>", lambda e: self.__pylmdOptionsMenuSelected[0].set(widgetData[0].minVal) if len(self.__pylmdOptionsMenuSelected[0].get()) == 0 else "")
+        self.__pylmdOptionMenus[1].bind("<FocusOut>", lambda e: self.__pylmdOptionsMenuSelected[1].set(widgetData[1].minVal) if len(self.__pylmdOptionsMenuSelected[1].get()) == 0 else "")
+        self.__pylmdOptionMenus[2].bind("<FocusOut>", lambda e: self.__pylmdOptionsMenuSelected[2].set(widgetData[2].minVal) if len(self.__pylmdOptionsMenuSelected[2].get()) == 0 else "")
+        self.__pylmdOptionMenus[3].bind("<FocusOut>", lambda e: self.__pylmdOptionsMenuSelected[3].set(widgetData[3].minVal) if len(self.__pylmdOptionsMenuSelected[3].get()) == 0 else "")
+        self.__pylmdOptionMenus[4].bind("<FocusOut>", lambda e: self.__pylmdOptionsMenuSelected[4].set(widgetData[4].minVal) if len(self.__pylmdOptionsMenuSelected[4].get()) == 0 else "")
+        self.__pylmdOptionMenus[5].bind("<FocusOut>", lambda e: self.__pylmdOptionsMenuSelected[5].set(widgetData[5].minVal) if len(self.__pylmdOptionsMenuSelected[5].get()) == 0 else "")
+
+        # Register validation functions
+        validateFunction0 = self.__pylmdParameterFrame.register(self.__validations.validate_Spinbox_Input_Shape_Dilation)
+        self.__pylmdOptionMenus[0].config(validate="all", validatecommand=(validateFunction0, "%P"))
+        validateFunction1 = self.__pylmdParameterFrame.register(self.__validations.validate_Spinbox_Input_Shape_Erosion)
+        self.__pylmdOptionMenus[1].config(validate="all", validatecommand=(validateFunction1, "%P"))
+        validateFunction2 = self.__pylmdParameterFrame.register(self.__validations.validate_Spinbox_Input_Binary_Smoothing)
+        self.__pylmdOptionMenus[2].config(validate="all", validatecommand=(validateFunction2, "%P"))
+        validateFunction3 = self.__pylmdParameterFrame.register(self.__validations.validate_Spinbox_Input_Convolution_Smoothing)
+        self.__pylmdOptionMenus[3].config(validate="all", validatecommand=(validateFunction3, "%P"))
+        validateFunction4 = self.__pylmdParameterFrame.register(self.__validations.validate_Spinbox_Input_Poly_Compression_Factor)
+        self.__pylmdOptionMenus[4].config(validate="all", validatecommand=(validateFunction4, "%P"))
+        validateFunction5 = self.__pylmdParameterFrame.register(self.__validations.validate_Spinbox_Input_Distance_Heuristic)
+        self.__pylmdOptionMenus[5].config(validate="all", validatecommand=(validateFunction5, "%P"))
+
         self.__pylmdParameterFrame.pack(side=tk.TOP, fill=tk.X, expand=True, padx=Gui.__PADX, pady=Gui.__PADY, ipadx=Gui.__IPADX, ipady=Gui.__IPADY)
 
-        self.__calculationParameter = pyLMDCalculationParameter(shapeDilation=0, shapeErosion=0, binarySmoothing=14,
-            convolutionSmoothing=15, polyCompressionFactor=30, distanceHeuristic=300)
+        # The object with the calculation parameter | prefilled with the default values
+        self.__calculationParameter = pyLMDCalculationParameter(shapeDilation=pyLMDParameterLimits.get_Shape_Dilation_Default(),
+            shapeErosion=pyLMDParameterLimits.get_Shape_Erosion_Default(),
+            binarySmoothing=pyLMDParameterLimits.get_Binary_Smoothing_Default(),
+            convolutionSmoothing=pyLMDParameterLimits.get_Convolution_Smoothing_Default(),
+            polyCompressionFactor=pyLMDParameterLimits.get_Poly_Compression_Factor_Default(),
+            distanceHeuristic=pyLMDParameterLimits.get_Distance_Heuristic_Default())
         ##### END Widgets for pyLMD parameter #####
 
 
@@ -381,7 +411,6 @@ class Gui():
         # Pattern: "stdout" "_" Int ".txt"
         # or:      "stderr" "_" Int ".txt"
         remove_Temp_Files_In_Path(".")
-
 
     def __del__(self) -> None:
         start("Close GUI ...")
@@ -730,11 +759,25 @@ class Gui():
             self.__pathInputEntry["state"] = "disabled"
             self.__selectOutputPathButton["state"] = "disabled"
 
+            # Restore the path of the pre-selected Radiobutton picture via a callback function
+            # This callback will be used after a new file was loaded
+            self.__callbacks.callback_Gui_Rb_Same_As_Picture_Path_Changed()
+
 # ---------------------------------------------------------------------------------------------------------------------
 
     def __toggle_Pylmd_Option_Menus_State(self) -> None:
         for currOptionWidget in self.__pylmdOptionMenus:
-            currOptionWidget["state"] = "normal" if currOptionWidget["state"] == "disabled" else "disabled"
+            if self.__varUseDefaultpylmdSettings.get() == 1:
+                currOptionWidget["state"] = "disabled"
+            else:
+                currOptionWidget["state"] = "normal"
+
+        if self.__varUseDefaultpylmdSettings.get() == 1:
+            defaultValues = [ pyLMDParameterLimits.get_Shape_Dilation_Default(), pyLMDParameterLimits.get_Shape_Erosion_Default(),
+                pyLMDParameterLimits.get_Binary_Smoothing_Default(), pyLMDParameterLimits.get_Convolution_Smoothing_Default(),
+                pyLMDParameterLimits.get_Poly_Compression_Factor_Default(), pyLMDParameterLimits.get_Distance_Heuristic_Default() ]
+            for i in range(len(defaultValues)):
+                self.__pylmdOptionsMenuSelected[i].set(defaultValues[i])
 
 # ---------------------------------------------------------------------------------------------------------------------
 

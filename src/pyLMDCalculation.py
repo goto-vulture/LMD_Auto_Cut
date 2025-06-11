@@ -8,125 +8,11 @@ from lmd.lib import SegmentationLoader, Collection, Shape
 
 from Misc import *
 from CalculationThreads import *
+from pyLMDCalculationParameter import *
 
 Image.MAX_IMAGE_PIXELS=None
 
-# =====================================================================================================================
 
-class pyLMDCalculationParameter():
-    def __init__(self, shapeDilation: int, shapeErosion: int, binarySmoothing: int, convolutionSmoothing: int,
-        polyCompressionFactor: int, distanceHeuristic: int, outputPath: str = ""):
-        is_Type(shapeDilation, int)
-        is_Type(shapeErosion, int)
-        is_Type(binarySmoothing, int)
-        is_Type(convolutionSmoothing, int)
-        is_Type(polyCompressionFactor, int)
-        is_Type(distanceHeuristic, int)
-        is_Type(outputPath, str)
-        if shapeDilation < 0:
-            raise ValueError("Shape dilation is lower than 0. Given value: " + str(shapeDilation))
-        if shapeErosion < 0:
-            raise ValueError("Shape erosion is lower than 0. Given value: " + str(shapeErosion))
-        if binarySmoothing < 0:
-            raise ValueError("Binary smoothing is lower than 0. Given value: " + str(binarySmoothing))
-        if convolutionSmoothing < 0:
-            raise ValueError("Convolution smoothing is lower than 0. Given value: " + str(convolutionSmoothing))
-        if polyCompressionFactor < 0:
-            raise ValueError("Poly compression factor is lower than 0. Given value: " + str(polyCompressionFactor))
-        if distanceHeuristic < 0:
-            raise ValueError("Distance heuristic is lower than 0. Given value: " + str(distanceHeuristic))
-        self.__shapeDilation = shapeDilation
-        self.__shapeErosion = shapeErosion
-        self.__binarySmoothing = binarySmoothing
-        self.__convolutionSmoothing = convolutionSmoothing
-        self.__polyCompressionFactor = polyCompressionFactor
-        self.__distanceHeuristic = distanceHeuristic
-        self.__outputName = copy.deepcopy(outputPath)
-
-# ---------------------------------------------------------------------------------------------------------------------
-
-    def __str__(self) -> str:
-        strRep  = "shapeDilation:         " + str(self.__shapeDilation) + "\n"
-        strRep += "shapeErosion:          " + str(self.__shapeErosion) + "\n"
-        strRep += "binarySmoothing:       " + str(self.__binarySmoothing) + "\n"
-        strRep += "convolutionSmoothing:  " + str(self.__convolutionSmoothing) + "\n"
-        strRep += "polyCompressionFactor: " + str(self.__polyCompressionFactor) + "\n"
-        strRep += "distanceHeuristic:     " + str(self.__distanceHeuristic)
-        if len(self.__outputName) > 0:
-            strRep += "\nOutputPath:            " + path_Head(self.__outputName)
-        return is_Type_R(strRep, str)
-
-# ---------------------------------------------------------------------------------------------------------------------
-
-    def get_Parameter_As_Str_List(self) -> list[str]:
-        result = [ str(self.__shapeDilation), str(self.__shapeErosion), str(self.__binarySmoothing),
-                   str(self.__convolutionSmoothing), str(self.__polyCompressionFactor), str(self.__distanceHeuristic) ]
-        return result
-
-# ---------------------------------------------------------------------------------------------------------------------
-
-    def set_Shape_Dilation(self, newVal: int) -> None:
-        is_Type(newVal, int)
-        if newVal < 0:
-            raise ValueError("New shape dilation is lower than 0. Given value: " + str(newVal))
-        self.__shapeDilation = newVal
-
-    def get_Shape_Dilation(self) -> int:
-        return is_Type_R(self.__shapeDilation, int)
-
-    def set_Shape_Erosion(self, newVal: int) -> None:
-        is_Type(newVal, int)
-        if newVal < 0:
-            raise ValueError("New shape erosion is lower than 0. Given value: " + str(newVal))
-        self.__shapeErosion = newVal
-
-    def get_Shape_Erosion(self) -> int:
-        return is_Type_R(self.__shapeErosion, int)
-
-    def set_Binary_Smoothing(self, newVal: int) -> None:
-        is_Type(newVal, int)
-        if newVal < 0:
-            raise ValueError("New binary smoothing is lower than 0. Given value: " + str(newVal))
-        self.__binarySmoothing = newVal
-
-    def get_Binary_Smoothing(self) -> int:
-        return is_Type_R(self.__binarySmoothing, int)
-
-    def set_Convolution_Smoothing(self, newVal: int) -> None:
-        is_Type(newVal, int)
-        if newVal < 0:
-            raise ValueError("New convolution smoothing is lower than 0. Given value: " + str(newVal))
-        self.__convolutionSmoothing = newVal
-
-    def get_Convolution_Smoothing(self) -> int:
-        return is_Type_R(self.__convolutionSmoothing, int)
-
-    def set_Poly_Compression_Factor(self, newVal: int) -> None:
-        is_Type(newVal, int)
-        if newVal < 0:
-            raise ValueError("New poly compression factor is lower than 0. Given value: " + str(newVal))
-        self.__polyCompressionFactor = newVal
-
-    def get_Poly_Compression_Factor(self) -> int:
-        return is_Type_R(self.__polyCompressionFactor, int)
-
-    def set_Distance_Heuristic(self, newVal: int) -> None:
-        is_Type(newVal, int)
-        if newVal < 0:
-            raise ValueError("New distance heuristic is lower than 0. Given value: " + str(newVal))
-        self.__distanceHeuristic = newVal
-
-    def get_Distance_Heuristic(self) -> int:
-        return is_Type_R(self.__distanceHeuristic, int)
-
-    def get_Output_Basename(self) -> str:
-        return is_Type_R(path_Basename(self.__outputName), str)
-
-    def get_Output_Path(self) -> str:
-        return is_Type_R(path_Head(self.__outputName), str)
-
-    def get_Output_Name(self) -> str:
-        return is_Type_R(self.__outputName, str)
 
 # =====================================================================================================================
 
@@ -216,9 +102,9 @@ class pyLMDCalculation():
             # No plotting anymore because it destroys the plot on the GUI!
 
             # Show the plot and save it
-            shape_collection.plot(calibration = True, save_name = outputFilePath + "/" + outputFileBasename + "_Plot.png", fig_size = (12, 12))
-            # Only save the plot without show it
-            #shape_collection.save(outputFilePath + "/" + outputFileBasename + "_Plot.png")
+            # shape_collection.plot(calibration = True, save_name = outputFilePath + "/" + outputFileBasename + "_Plot.png", fig_size = (12, 12))
+            # Only save the XML file without showing the plot
+            shape_collection.save(outputFilePath + "/" + outputFileBasename + ".xml")
 
             self.__XML_files.append(outputFileBasename + ".xml")
             self.__PNG_files.append(outputFileBasename + "_Plot.png")
