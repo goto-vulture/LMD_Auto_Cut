@@ -1,1 +1,2 @@
-python Main.py
+python src/Main.py
+PAUSE
