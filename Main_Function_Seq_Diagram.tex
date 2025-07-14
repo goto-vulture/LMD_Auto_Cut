@@ -1,0 +1,168 @@
+\documentclass[a3paper, 11pt, svgnames]{article}
+
+\usepackage[margin=0.10cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{tikz-uml}
+\usepackage{float}
+
+\newcommand{\userName}{User}
+\newcommand{\guiName}{GUI}
+\newcommand{\fileDialogName}{File dialog}
+\newcommand{\loadDialogName}{Load dialog}
+\newcommand{\calculationThreadName}{Calculation thread}
+\newcommand{\outThreadName}{Thread output file}
+
+\newcommand{\hintGreen}{green!75}
+\newcommand{\hintRed}{red!75}
+
+
+
+\begin{document}
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}[scale=0.95]
+            \begin{umlseqdiag}
+                \umlactor[no ddots]{\userName}
+                \umlobject[x=7, no ddots]{\guiName}
+                %\umlobject[x=7, no ddots]{\fileDialogName}
+                %\umlobject[no ddots]{\loadDialogName}
+
+                \begin{umlfragment}[type=alt, label=On Windows, inner xsep=11]
+                    \begin{umlcall}[op=Start\_Windows.bat, dt=10]{\userName}{\guiName}
+                    \end{umlcall}
+                    \umlfpart[On Linux]
+                    \begin{umlcall}[op=Start\_Linux.sh]{\userName}{\guiName}
+                    \end{umlcall}
+                \end{umlfragment}
+
+                \begin{umlcall}[op=File$\rightarrow$Open picture 1/2]{\userName}{\guiName}
+                    \umlcreatecall[x=11, no ddots, dt=-1]{\guiName}{\fileDialogName}
+                \end{umlcall}
+                \begin{umlcall}[dt=2, op=Select picture 1/2]{\userName}{\fileDialogName}
+                    \begin{umlcall}[dt=5, op=Get file name, return=file name]{\guiName}{\fileDialogName}
+                        % Has no meaning here! This call will only create  some space between the previous call and the following return
+                        \begin{umlcall}[type=return, draw=white, dt=-4]{\fileDialogName}{\guiName}
+                        \end{umlcall}
+                    \end{umlcall}
+                    \begin{umlcall}[op=destroy, text=\hintRed]{\guiName}{\fileDialogName}
+                    \end{umlcall}
+                \end{umlcall}
+
+                \umlcreatecall[no ddots]{\guiName}{\loadDialogName}
+                \begin{umlcall}[op=load picture, return=numpy array]{\guiName}{\loadDialogName}
+                    % Has no meaning here! This call will only create  some space between the previous call and the following return
+                    \begin{umlcall}[type=return, draw=white, dt=-4]{\loadDialogName}{\guiName}
+                    \end{umlcall}
+                \end{umlcall}
+                \begin{umlcall}[op=destroy, text=\hintRed]{\guiName}{\loadDialogName}
+                \end{umlcall}
+
+                % Adjust the position of the next call for the GUI
+                \umlsdnode[dt=3]{\guiName}
+
+                \begin{umlfragment}[type=GUI adjustments]
+                    \begin{umlcallself}[op=Show pic on GUI]{\guiName}
+                    \end{umlcallself}
+                    \begin{umlcallself}[op=Activate RB ``Picture 1'' / ``Picture 2'']{\guiName}
+                    \end{umlcallself}
+                    \begin{umlcallself}[op=Select RB ``Picture 1'' / ``Picture 2'']{\guiName}
+                    \end{umlcallself}
+                    \begin{umlcallself}[op=Activate RB ``Same as picture 1 path'' / ``Same as pictur 2'']{\guiName}
+                    \end{umlcallself}
+                    \begin{umlcallself}[op=Select RB ``Same as picture 1 path'' / ``Same as picture 2 path'']{\guiName}
+                    \end{umlcallself}
+                    \begin{umlcallself}[op=Activate button ``Start calculation'']{\guiName}
+                    \end{umlcallself}
+                \end{umlfragment}
+
+                % Adjust the position of the next call from user to GUI
+                \umlsdnode[dt=82]{\userName}
+
+                \begin{umlfragment}[type=loop, label={i: 0 - 3}, inner xsep=4]
+                    \begin{umlcall}[op=Select cal points]{\userName}{\guiName}
+                        \begin{umlcallself}[op=Draw cal point on pic]{\guiName}
+                        \end{umlcallself}
+                        \begin{umlcallself}[op=Update cal points, dt=-1]{\guiName}
+                        \end{umlcallself}
+                    \end{umlcall}
+                \end{umlfragment}
+
+                % Adjust the position of the user object before the next UML fragment will be created
+                \umlsdnode[dt=5]{\userName}
+
+                \begin{umlfragment}[name=readOutput]
+                    \begin{umlcall}[op=Using ``Start calculation'' button, return=XML file]{\userName}{\guiName}
+                        \umlcreatecall[no ddots]{\guiName}{\calculationThreadName}
+                        \umlcreatecall[x=23, no ddots]{\guiName}{\outThreadName}
+                        \begin{umlcall}[op=start, type=asynchron]{\guiName}{\calculationThreadName}
+                            \begin{umlcall}[op=Write stdout + stderr, type=asynchron]{\calculationThreadName}{\outThreadName}
+                            \end{umlcall}
+                        \end{umlcall}
+                        \umlsdnode[dt=2]{\outThreadName}
+                        \umlsdnode[dt=7]{\calculationThreadName}
+
+                        \begin{umlfragment}[type=loop]
+                            \begin{umlcall}[op=Read last output line, type=asynchron, return=Last output line]{\guiName}{\outThreadName}
+                            \end{umlcall}
+                        \end{umlfragment}
+
+                        \begin{umlcallself}[op={\texttt{\_\_label\_Connected\_Regions}}]{\calculationThreadName}
+                        \end{umlcallself}
+                        \begin{umlcallself}[op=Remove too small areas]{\calculationThreadName}
+                        \end{umlcallself}
+                        \begin{umlcallself}[op={\texttt{\_\_create\_Sub\_Pictures}}]{\calculationThreadName}
+                        \end{umlcallself}
+                        \begin{umlcallself}[op=Create shape collection]{\calculationThreadName}
+                        \end{umlcallself}
+                        \begin{umlcallself}[op=Save shape collection]{\calculationThreadName}
+                        \end{umlcallself}
+                     \end{umlcall}
+                     \begin{umlcall}[op=destroy, text=\hintRed]{\guiName}{\calculationThreadName}
+                     \end{umlcall}
+                     \begin{umlcall}[op=destroy, text=\hintRed]{\guiName}{\outThreadName}
+                     \end{umlcall}
+                \end{umlfragment}
+
+                % Hints
+                \umlnote[x=24, y=-23]{readOutput}{In practice two separate files and threads for stdout and stderr are used}
+            \end{umlseqdiag}
+        \end{tikzpicture}
+    \end{figure}
+\end{document}
+
+
+% Siehe: https://perso.ensta-paris.fr/~kielbasi/tikzuml/var/files/html/web-tikz-uml-userguidech5.html#x7-870005.4
+% 5.5 To change preferences
+%
+% Thanks to the tikzumlset command, you can set colors for calls, fragments and objects:
+%
+% text:
+%     allows to set the default text color (=black by default),
+% draw:
+%     allows to set the default color of edges and arrows (=black by default),
+% fill object:
+%     allows to set the default background color of objects (=yellow !20 by default),
+% fill call:
+%     allows to set the default background color for calls (=white by default),
+% fill fragment:
+%     allows to set the default background color for fragments (=white by default),
+% font:
+%     allows to set the default font style (=\small by default),
+% object stereo:
+%     allows to set the default font style (=object by default),
+% call dt:
+%     allows to set the default font style (=auto by default),
+% call padding:
+%     allows to set the default font style (=2 by default),
+% call type:
+%     allows to set the default font style (=synchron by default),
+% fragment type:
+%     allows to set the default font style (=opt by default),
+% fragment inner xsep:
+%     allows to set the default font style (=1 by default),
+% fragment inner ysep:
+%     allows to set the default font style (=1 by default),
+% create call dt:
+%     allows to set the default font style (=4 by default)
+%
+% You can also use the options text, draw and fill on a particular element, as in the example of introduction.
