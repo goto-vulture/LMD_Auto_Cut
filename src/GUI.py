@@ -39,18 +39,6 @@ window=tk.Tk()
 window.wm_title("Window title")
 
 
-def test_Func(inputData: str) -> bool:
-    print(inputData)
-    print(type(inputData))
-    if type(inputData) is not str:
-        return False
-    if len(inputData) == 0:
-        return False
-    if not inputData.isdigit():
-        return False
-
-
-    return True
 
 class Gui():
     def __init__(self, picData1 = None, picData2 = None, slicingFactor: int = 1):
