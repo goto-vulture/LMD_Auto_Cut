@@ -236,17 +236,18 @@ if __name__ == "__main__":
     outputPath: str = ""
     if len(sys.argv) > 14:
         outputPath = sys.argv[14]
-        print("Using: \"" + path_Head(sys.argv[14]) + "\" as output path")
+        print("Using: \"" + path_Head(sys.argv[14]) + "\" as output path", file=sys.stdout, flush=True)
 
     # The rest are the pyLMD settings
     param = pyLMDCalculationParameter(int(sys.argv[8]), int(sys.argv[9]), int(sys.argv[10]), int(sys.argv[11]), int(sys.argv[12]),
                                       int(sys.argv[13]), outputPath)
 
-    print("PID: " + str(os.getpid()))
-    print("Calibration points: " + str(calPoints))
-    print("> pyLMD settings <\n" + str(param) + "\n", flush=True)
+    print("PID: " + str(os.getpid()), file=sys.stdout, flush=True)
+    print("Calibration points: " + str(calPoints), file=sys.stdout, flush=True)
+    print("> pyLMD settings <\n" + str(param) + "\n", file=sys.stdout, flush=True)
 
     try:
+        print("Try to open the image file: " + fileName, file=sys.stdout, flush=True)
         img = Image.open(fileName)
     except FileNotFoundError:
         print("The file was not found.", file=sys.stderr, flush=True)
@@ -261,5 +262,5 @@ if __name__ == "__main__":
     # Now are all data and information available for creating the calculation object
     calcObj = pyLMDCalculation(picData, calPoints, param)
     calcObj.start()
-    print("END", flush=True)
+    print("END", file=sys.stdout, flush=True)
     exit(0)
