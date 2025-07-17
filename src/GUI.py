@@ -439,7 +439,8 @@ class Gui():
 
                 # Create and handle new process for the calculation
                 nextProcessCall = self.__pyLMDProcs.get()
-                nextProc = subprocess.Popen(nextProcessCall, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, encoding="utf-8", bufsize=1)
+                # No "encoding="utf-8"", because this causes errors on some Windows machines
+                nextProc = subprocess.Popen(nextProcessCall, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1)
 
                 # Create two different threads to write the output of the new process to two different files
                 threadStdout = threading.Thread(target=write_Stdout_To_File, args=("stdout_" + str(nextProc.pid) + ".txt", nextProc))
@@ -617,7 +618,8 @@ class Gui():
         print("> Using parameter <\n" + str(self.__calculationParameter) + "\n", flush=True)
 
         # Construct the process call
-        processCall = [ "python3", "./src/pyLMDCalculation.py", "tmp.png" ]
+        # "python" instead of "python3", because on Windows systems an symlink from python3 to python is usually not available
+        processCall = [ "python", "./src/pyLMDCalculation.py", "tmp.png" ]
         # Add calibration points
         for coord in calibrationCoordinates:
             is_Valid_Coordinate(coord[0])
