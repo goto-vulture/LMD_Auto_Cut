@@ -357,6 +357,9 @@ class Gui():
 
 
         # Job list with label
+        self.__taskListLabelCurrentTasks: int = 0
+        self.__taskListLabelTasksFinished: int = 0
+        self.__taskListLabelTasksFinishedWithErrors: int = 0
         self.__taskList = tk.Listbox(widgetsFrame, height=4, width=10)
         self.__taskList.xView = True
         self.__taskList.yView = True
@@ -420,27 +423,57 @@ class Gui():
         while True:
             time.sleep(0.25)
             # Stop the thread when the stop flag was set
+            # This flag will be set when the GUI object is in the destructor
             if self.__updateTaskOutputThreadStopFlag == True:
                 break
             # Are there any available tasks? (Either in the queue or in use)
+            # If not restart the loop
             if self.__pyLMDProcs.empty() and nextProc == None:
                 continue
             # Are there tasks in the queue while currently is no task in use
+            ##### BEGIN A new calculation will be started #####
             if self.__pyLMDProcs.empty() == False and nextProc == None:
-                nextProc = self.__pyLMDProcs.get()
-                print("New process (pid: " + str(nextProc.pid) + ") found at: " + get_Current_Time(), flush=True)
+                # Create temporary image file for the next calculation
+                im = Image.fromarray(self.__pictureData.get_Picture_Data_Sliced(PictureData.FIRST_PIC))
+                im.save("tmp.png")
+
+                # Create and handle new process for the calculation
+                nextProcessCall = self.__pyLMDProcs.get()
+                nextProc = subprocess.Popen(nextProcessCall, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, encoding="utf-8", bufsize=1)
+
+                # Create two different threads to write the output of the new process to two different files
+                threadStdout = threading.Thread(target=write_Stdout_To_File, args=("stdout_" + str(nextProc.pid) + ".txt", nextProc))
+                threadStderr = threading.Thread(target=write_Stderr_To_File, args=("stderr_" + str(nextProc.pid) + ".txt", nextProc))
+
+                self.__pyLMDStdoutThreads.put(threadStdout)
+                self.__pyLMDStderrThreads.put(threadStderr)
+
+                # Start update threads
+                threadStdout.start()
+                threadStderr.start()
+
+                print("Call: \"" + str(nextProcessCall) + "\"")
+                print("New process pid: " + str(nextProc.pid) + ". (" + get_Current_Time() + ")", flush=True)
+
+                # It is not possible to alter the text of an aready created entry the text
+                # So a delete and recreate is necessary here
+                self.__taskList.delete(taskListEntry)
+                self.__taskList.insert(taskListEntry, "Calculation started at " + get_Current_Time())
+                self.__taskList.itemconfigure(taskListEntry, fg="black")
+                self.__taskList.selection_clear(0, tk.END)
+
                 currCalcStep = 0
                 percentValue = 0.0
                 lastPercentValue = percentValue
                 numDots = 0
-            # A task is in use
+            ##### END A new calculation will be started #####
             else:
+                ##### BEGIN A calculation is finished #####
                 if nextProc.poll() != None:
                     print("Process (pid: " + str(nextProc.pid) + ") returned at " + get_Current_Time() + " with: " + str(nextProc.returncode), flush=True)
                     if self.__taskList.size() >= taskListEntry:
                         self.__taskList.delete(taskListEntry)
                     self.__taskList.insert(taskListEntry, "Calculation finished at " + get_Current_Time() + " with: " + str(nextProc.returncode))
-                    self.__taskList.itemconfigure(taskListEntry, fg="green" if nextProc.returncode == 0 else "red")
 
                     # Try to delete the temp files
                     # remove_File("stdout_" + str(nextProc.pid) + ".txt")
@@ -448,9 +481,17 @@ class Gui():
                     # Remove the error file only when the subprocess returned with 0
                     if nextProc.returncode == 0:
                         remove_File("stderr_" + str(nextProc.pid) + ".txt")
+                        self.__taskListLabelTasksFinished += 1
+                        self.__taskList.itemconfigure(taskListEntry, fg="green")
+                    else:
+                        self.__taskListLabelTasksFinishedWithErrors += 1
+                        self.__taskList.itemconfigure(taskListEntry, fg="red")
+                    self.__update_Task_List_Label()
 
                     nextProc = None
                     taskListEntry += 1
+                ##### END A calculation is finished #####
+                ##### BEGIN A calculation is running #####
                 else:
                     # Extract percent from the file and update GUI ...
                     percentValues = extract_Percentages(get_Last_Line_From_File("stderr_" + str(nextProc.pid) + ".txt"))
@@ -475,6 +516,9 @@ class Gui():
                     numDots = (numDots + 1) % 4
                     self.__taskList.insert(taskListEntry, newText)
                     self.__taskList.itemconfigure(taskListEntry, fg="black")
+                    self.__taskList.selection_clear(0, tk.END)
+                    self.__taskList.see(taskListEntry)
+                ##### END A calculation is running #####
         print("\nStop update thread ...", flush=True)
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -569,10 +613,8 @@ class Gui():
                 lmd_y = x
                 calibrationCoordinates.append([ lmd_x, lmd_y ])
 
-        print("Start XML calculation with calibration points: " + str(calibrationCoordinates))
+        print("Prepare XML calculation with calibration points: " + str(calibrationCoordinates))
         print("> Using parameter <\n" + str(self.__calculationParameter) + "\n", flush=True)
-        im = Image.fromarray(self.__pictureData.get_Picture_Data_Sliced(PictureData.FIRST_PIC))
-        im.save("tmp.png")
 
         # Construct the process call
         processCall = [ "python3", "./src/pyLMDCalculation.py", "tmp.png" ]
@@ -601,25 +643,31 @@ class Gui():
             fullOutputName += path_Basename(path_Tail(self.__openPictureOne))
             processCall.append(fullOutputName + ".xml")
 
-        print("Using subprocess call: \"", end="")
+        print("Prepare subprocess call: \"", end="")
         for i in range(len(processCall)):
             print(processCall[i], end="")
             if i + 1 < len(processCall):
                 print(" ", end="")
         print("\"", flush=True)
 
-        proc = subprocess.Popen(processCall, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, encoding="utf-8", bufsize=1)
-        procID = proc.pid
+        # Create a new entry in the task list on the GUI
+        newTaskListEntryIndex = self.__taskList.size()
+        self.__taskList.insert(newTaskListEntryIndex, "Calculation prepared at " + get_Current_Time())
+        self.__taskList.itemconfigure(newTaskListEntryIndex, fg="black")
 
-        threadStdout = threading.Thread(target=write_Stdout_To_File, args=("stdout_" + str(procID) + ".txt", proc))
-        threadStderr = threading.Thread(target=write_Stderr_To_File, args=("stderr_" + str(procID) + ".txt", proc))
+        #proc = subprocess.Popen(processCall, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, encoding="utf-8", bufsize=1)
 
-        threadStdout.start()
-        threadStderr.start()
+        #threadStdout = threading.Thread(target=write_Stdout_To_File, args=("stdout_" + str(proc.pid) + ".txt", proc))
+        #threadStderr = threading.Thread(target=write_Stderr_To_File, args=("stderr_" + str(proc.pid) + ".txt", proc))
 
-        self.__pyLMDProcs.put(proc)
-        self.__pyLMDStdoutThreads.put(threadStdout)
-        self.__pyLMDStderrThreads.put(threadStderr)
+        self.__pyLMDProcs.put(processCall)
+        self.__taskListLabelCurrentTasks += 1
+        self.__update_Task_List_Label()
+        #self.__pyLMDStdoutThreads.put(threadStdout)
+        #self.__pyLMDStderrThreads.put(threadStderr)
+
+        #threadStdout.start()
+        #threadStderr.start()
 
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -726,6 +774,14 @@ class Gui():
 
     def activate_Start_Calculation_Button(self) -> None:
         self.__startCalcButton["state"] = "active"
+
+# ---------------------------------------------------------------------------------------------------------------------
+
+    def __update_Task_List_Label(self):
+        newText = "Tasks (" + str(self.__taskListLabelCurrentTasks) + ")"
+        newText += " | Finished (" + str(self.__taskListLabelTasksFinished) + ")"
+        newText += " | Errors (" + str(self.__taskListLabelTasksFinishedWithErrors) + ")"
+        self.__taskListLabel["text"] = newText
 
 # ---------------------------------------------------------------------------------------------------------------------
 
